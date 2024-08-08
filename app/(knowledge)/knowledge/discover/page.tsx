@@ -1,20 +1,26 @@
 import React from 'react';
 import DiscoverPage from "@/components/toffee/knowledge/Discover";
-import { Character, File } from "@prisma/client";
+import { Character, KnowledgeFile, KnowledgeText, KnowledgeLink } from "@prisma/client";
 
 const KnowledgePackCreate: React.FC = () => {
 
   const data: {
-    name: string;
-    type: string;
-    conns: number;
-    image: string;
-    characters: Partial<Character>[];
-    files: Partial<File>[];
+    name: string | undefined;
+    type: string | undefined;
+    isPersonal: boolean;
+    knowledgeId: string;
+    conns: number | undefined;
+    image: string | null | undefined;
+    characters: Partial<Character>[] | undefined;
+    files: Partial<KnowledgeFile>[] | undefined;
+    texts: Partial<KnowledgeText>[] | undefined;
+    links: Partial<KnowledgeLink>[] | undefined;
   } = {
     name: "Epic Java Pack",
     type: "PACK",
+    isPersonal: true,
     conns: 1424,
+    knowledgeId: "public",
     image: "/candies/d8532a4c8ac663ef052fe1bce13c1ff8.png",
     characters: [
       {
@@ -66,7 +72,9 @@ const KnowledgePackCreate: React.FC = () => {
         image: "/characters/gojo.png"
       }
     ],
-    files: []
+    files: [],
+    texts: [],
+    links: []
   };
 
   return <DiscoverPage data={data}/>;

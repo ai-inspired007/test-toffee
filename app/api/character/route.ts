@@ -135,7 +135,7 @@ export async function POST(req: Request) {
       },
     });
     if (addons && addons.length > 0) {  
-      await prismadb.knowledgePackSubscription.createMany({  
+      await prismadb.characterKnowledgePack.createMany({  
         data: addons.map((addonId: string) => ({  
           characterId: character.id,  
           userId: user.id,  
