@@ -255,12 +255,12 @@ const LeftSideBar = ({ characters }: { characters: Character[] }) => {
         </div>
       ) : (
         <div className="mt-4 flex w-full flex-col gap-2">
-          <div className="w-full cursor-pointer rounded-full  border border-white/20 bg-gradient-to-r from-[#C28851] via-[#B77536] to-[#B77536] py-1.5 text-center  font-[400] text-white">
+          <Link href={"/signup"} className="w-full cursor-pointer rounded-full  border border-white/20 bg-gradient-to-r from-[#C28851] via-[#B77536] to-[#B77536] py-1.5 text-center  font-[400] text-white">
             Sign Up
-          </div>
-          <div className="w-full cursor-pointer rounded-full border bg-[#202020] py-1.5 text-center  text-[#DDDDDD]">
+          </Link>
+          <Link href={"/login"} className="w-full cursor-pointer rounded-full border bg-[#202020] py-1.5 text-center  text-[#DDDDDD]">
             Login
-          </div>
+          </Link>
         </div>
       )}
     </div>
