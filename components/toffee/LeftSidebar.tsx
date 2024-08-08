@@ -247,9 +247,9 @@ const LeftSideBar = ({ characters }: { characters: Character[] }) => {
           {open && (
             <div className="flex flex-col ml-1">
               <div className=" font-[400] text-[#B1B1B1]">
-                VectorChat
+              {user.name}
               </div>
-              <div className="text-xs text-[#727272]">{user.name}</div>
+              <div className="text-xs text-[#727272]">{user.email}</div>
             </div>
           )}
         </div>
