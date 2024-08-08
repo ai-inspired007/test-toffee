@@ -3,20 +3,7 @@ import { auth } from "auth";
 import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { MemoryManager, writeFile, deleteFile } from "@/lib/memory/memory";
-import { deleteFiles } from "@/lib/utils";
-import { getLoader } from "@/lib/memory/indexing";
-import { Indexer } from "@/lib/memory/indexing";
-import { Pinecone } from "@pinecone-database/pinecone";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { CharacterTextSplitter } from "langchain/text_splitter";
-import {PineconeStore} from "langchain/vectorstores/pinecone"
-import { FileType, KnowledgePackType } from "@prisma/client";
-import { CHARS_PER_DOC } from "@/lib/const";
-import fs from "fs";
 import { isEmpty } from "lodash";
-import { Document } from "langchain/document";
-import mime from "mime";
-import { bufferToBlob } from "@/lib/memory/indexing";
 
 export const maxDuration = 60;
 const MAX_CHARS = 10;
