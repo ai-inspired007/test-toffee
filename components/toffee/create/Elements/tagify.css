@@ -1,0 +1,6 @@
+.character-tagify tags {
+  width: 100%;
+}
+.character-tagify tags > span:first-of-type {
+  color: white
+}

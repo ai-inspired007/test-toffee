@@ -1,0 +1,9 @@
+{
+  // "extends": "next/core-web-vitals"
+  "extends": ["next", "prettier"]
+  // "parserOptions": {
+  //   "sourceType": "module",
+  //   "ecmaVersion": 2015
+  // }
+  // "parser": "@typescript-eslint"
+}

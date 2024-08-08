@@ -1,0 +1,308 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextIndex", "fullTextSearch"]
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Category {
+  id         String      @id @default(uuid())
+  name       String
+  characters Character[]
+  tags       Tag[]
+}
+
+model Tag {
+  id             String             @id @default(uuid())
+  name           String
+  categoryId     String
+  category       Category           @relation(fields: [categoryId], references: [id])
+  knowledgePacks KnowledgePackTag[]
+  characters     CharacterTag[]
+
+  @@index([categoryId])
+}
+
+model CharacterTag {
+  characterId String
+  tagId       String
+  character   Character @relation(fields: [characterId], references: [id])
+  tag         Tag       @relation(fields: [tagId], references: [id])
+
+  @@unique([characterId, tagId])
+  @@index([characterId])
+  @@index([tagId])
+}
+
+model KnowledgePackTag {
+  knowledgePackId String
+  tagId           String
+  id              String        @id @default(uuid())
+  knowledgePack   KnowledgePack @relation(fields: [knowledgePackId], references: [id])
+  tag             Tag           @relation(fields: [tagId], references: [id])
+
+  @@unique([knowledgePackId, tagId])
+  @@index([knowledgePackId])
+  @@index([tagId])
+}
+
+model APAIKey {
+  userId String @id
+  key    String
+}
+
+model CharacterKnowledgePack {
+  id              String        @id @default(uuid())
+  characterId     String        @unique
+  knowledgePackId String
+  character       Character     @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  knowledgePack   KnowledgePack @relation(fields: [knowledgePackId], references: [id], onDelete: Cascade)
+
+  @@index([characterId, knowledgePackId])
+}
+
+model Character {
+  id                      String                   @id @default(uuid())
+  userId                  String
+  image                   String
+  name                    String                   @db.Text
+  description             String
+  instructions            String                   @db.LongText
+  greeting                String                   @db.MediumText
+  seed                    String                   @db.LongText
+  vectors                 Int                      @default(0)
+  shared                  Boolean                  @default(false)
+  private                 Boolean                  @default(true)
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  categoryId              String
+  category                Category                 @relation(fields: [categoryId], references: [id])
+  user                    UserSettings             @relation(fields: [userId], references: [userId])
+  tags                    CharacterTag[]
+  messages                Message[]
+  subscriptions           Subscription[]
+  characterKnowledgePacks CharacterKnowledgePack[]
+  utility                 Utility?
+  storytelling            Storytelling?
+
+  @@index([categoryId])
+  @@fulltext([name])
+}
+
+model Utility {
+  characterId String    @id
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@index([characterId])
+}
+
+model Storytelling {
+  characterId String    @id
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@index([characterId])
+}
+
+model KnowledgePack {
+  id                      String                   @id @default(uuid())
+  name                    String
+  image                   String?
+  userId                  String?
+  description             String?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  sharing                 String?
+  type                    KnowledgePackType
+  parentId                String?
+  theme                   String?
+  tags                    KnowledgePackTag[]
+  parent                  KnowledgePack?           @relation("KnowledgePackToKnowledgePack", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children                KnowledgePack[]          @relation("KnowledgePackToKnowledgePack")
+  characterKnowledgePacks CharacterKnowledgePack[]
+  files                   KnowledgeFile[]
+  texts                   KnowledgeText[]
+  links                   KnowledgeLink[]
+  memoryMetadata          MemoryMetadata?
+  packMetadata            PackMetadata?
+  KnowledgeChat           KnowledgeChat[]
+
+  @@index([id])
+}
+
+model PackMetadata {
+  packID     String        @id
+  parentPack KnowledgePack @relation(fields: [packID], references: [id], onDelete: Cascade)
+
+  @@index([packID])
+}
+
+model MemoryMetadata {
+  packID      String        @id
+  characterId String
+  userID      String
+  parentPack  KnowledgePack @relation(fields: [packID], references: [id], onDelete: Cascade)
+
+  @@index([packID])
+}
+
+model Label {
+  id              String    @id @default(uuid())
+  name            String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  knowledgePackId String
+  summaries       Summary[] @relation("SummaryToLabel")
+}
+
+model Summary {
+  id              String        @id @default(uuid())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  knowledgePackId String
+  sourceText      String        @db.LongText
+  summaryText     String        @db.Text
+  parentId        String
+  fileId          String
+  linkId          String
+  textId          String
+  parent          Label         @relation("SummaryToLabel", fields: [parentId], references: [id], onDelete: Cascade)
+  file            KnowledgeFile @relation("FileToSummary", fields: [fileId], references: [id], onDelete: Cascade)
+  text            KnowledgeText @relation("TextToSummary", fields: [textId], references: [id], onDelete: Cascade)
+  link            KnowledgeLink @relation("LinkToSummary", fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@index([parentId])
+  @@index([fileId, textId, linkId])
+}
+
+model KnowledgeFile {
+  id              String        @id @default(uuid())
+  name            String        @db.Text
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  size            Int
+  type            String
+  knowledgePackId String
+  knowledgePack   KnowledgePack @relation(fields: [knowledgePackId], references: [id], onDelete: Cascade)
+  summaries       Summary[]     @relation("FileToSummary")
+
+  @@index([knowledgePackId])
+}
+
+model KnowledgeText {
+  id              String        @id @default(uuid())
+  name            String        @db.Text
+  size            Int
+  content         String        @db.LongText
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  knowledgePackId String
+  knowledgePack   KnowledgePack @relation(fields: [knowledgePackId], references: [id], onDelete: Cascade)
+  summaries       Summary[]     @relation("TextToSummary")
+
+  @@index([knowledgePackId])
+}
+
+model KnowledgeLink {
+  id              String        @id @default(uuid())
+  name            String        @db.Text
+  size            Int
+  url             String
+  icon            String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  knowledgePackId String
+  knowledgePack   KnowledgePack @relation(fields: [knowledgePackId], references: [id], onDelete: Cascade)
+  summaries       Summary[]     @relation("LinkToSummary")
+
+  @@index([knowledgePackId])
+}
+
+model KnowledgeChat {
+  id              String        @id @default(uuid())
+  name            String        @db.Text
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  knowledgePackId String
+  knowledgePack   KnowledgePack @relation(fields: [knowledgePackId], references: [id], onDelete: Cascade)
+
+  @@index([knowledgePackId])
+}
+
+model UserSettings {
+  userId                String      @id
+  name                  String?
+  email                 String?
+  following             Int?
+  follower              Int?
+  linkedin              String?
+  telegram              String?
+  instagram             String?
+  twitter               String?
+  chat_background_image String?
+  profile_image         String?
+  password              String?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  plan                  Plan        @default(FREE)
+  customerId            String?
+  characters            Character[]
+
+  @@index([userId])
+}
+
+model Follow {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  follower_id  String
+  following_id String
+
+  @@index([follower_id, following_id])
+}
+
+model Message {
+  id          String    @id
+  role        Role
+  content     String    @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  characterId String
+  userId      String
+  error       Boolean   @default(false)
+  image_url   String?
+  file_name   String?
+  file_type   String?
+  isEmbedded  Boolean   @default(false)
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@index([characterId])
+}
+
+model Subscription {
+  id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
+  characterId String
+  userId      String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@index([characterId])
+}
+
+enum Plan {
+  FREE
+  PRO
+}
+
+enum KnowledgePackType {
+  MEMORY
+  DICTIONARY
+  PACK
+}
+
+enum Role {
+  user
+  assistant
+}
