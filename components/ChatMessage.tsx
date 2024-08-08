@@ -1,7 +1,7 @@
 "use client";
 
 import { UserAvatar } from "@/components/UserAvatar";
-import { BotAvatar } from "@/app/(chat)/(routes)/chat/[chatId]/components/BotAvatar";
+import { BotAvatar } from "./BotAvatar";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { BeatLoader } from "react-spinners";

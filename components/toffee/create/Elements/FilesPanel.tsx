@@ -1,4 +1,3 @@
-import { File } from "@prisma/client";
 import { FilesPrivate } from "../../icons/Lock";
 const Files = ({ files }: { files: Partial<File>[] }) => {
     return (

@@ -195,7 +195,7 @@ export class MemoryManager {
     }
 
     public async deleteFile(fileId: string) {
-        await prismadb.file.deleteMany({
+        await prismadb.knowledgeFile.deleteMany({
             where: {
                 id: fileId
             }

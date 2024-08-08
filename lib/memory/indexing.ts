@@ -137,7 +137,9 @@ async function processTextChunks(
           data: {
             knowledgePackId,
             sourceText: content,
-            // fileId: parentFileId,
+            fileId: "",
+            linkId:"",
+            textId:"",
             parentId: newLabel,
             summaryText: summary,
           }
