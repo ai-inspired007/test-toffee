@@ -1,8 +1,6 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import {
-  Dispatch,
-  SetStateAction,
   useState,
   useEffect,
   useCallback,
@@ -10,9 +8,7 @@ import {
 } from "react";
 import { Loader2 } from "lucide-react";
 import { Character as BaseCharacterProps, Category as BaseCategory } from "@prisma/client";
-import Image from "next/image";
 import React from "react";
-import InnerCarouselDiscoverCard from "@/components/innerCarouselDiscoverCards";
 import Carousel from "@/components/toffee/Carousel";
 import CharacterCard from "@/components/toffee/CharacterCard";
 import CategoryCard from "@/components/toffee/CategoryCard";
