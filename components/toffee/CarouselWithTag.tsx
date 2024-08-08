@@ -108,5 +108,5 @@ const TagCarousel = forwardRef<
     </div>
   );
 });
-
+TagCarousel.displayName = "TagCarousel"; 
 export default TagCarousel;

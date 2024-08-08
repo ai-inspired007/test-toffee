@@ -110,5 +110,5 @@ const Carousel = forwardRef<
     </div>
   );
 });
-
+Carousel.displayName = "Carousel";
 export default Carousel;
