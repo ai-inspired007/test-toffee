@@ -264,7 +264,7 @@ model Follow {
 }
 
 model Message {
-  id          String    @id
+  id          String    @id @default(uuid())
   role        Role
   content     String    @db.Text
   createdAt   DateTime  @default(now())
