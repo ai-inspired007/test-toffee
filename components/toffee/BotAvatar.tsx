@@ -1,4 +1,4 @@
-import { Avatar, AvatarImage } from "@/components/ui/Avatar";
+import { Avatar, AvatarImage } from "@/components/ui/ImageAvatar";
 import { cn } from "@/lib/utils";
 
 interface BotAvatarProps {

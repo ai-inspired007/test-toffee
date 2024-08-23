@@ -1,7 +1,7 @@
 import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { toast } from "react-toastify";
 import { Copy } from "lucide-react";
 

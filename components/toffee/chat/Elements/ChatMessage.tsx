@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useContext, useState } from "react";
 import { StreamingCompletionContext } from "@/lib/chat/context";
-import { CodeRender } from "@/components/CodeRender";
+import { CodeRender } from "@/components/toffee/CodeRender";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/toffee/UserAvatar";
