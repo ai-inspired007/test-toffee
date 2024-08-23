@@ -1,7 +1,7 @@
 "use client";
 
 import { Character, Message } from "@prisma/client";
-import { BotAvatar } from "./BotAvatar";
+import { BotAvatar } from "../../BotAvatar";
 export const ChatHeader = ({
   character,
 }: {
