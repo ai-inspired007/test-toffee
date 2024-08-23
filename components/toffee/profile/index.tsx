@@ -13,7 +13,7 @@ import All from './Elements/AllPanel';
 import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "react-toastify";
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, PlusIcon } from 'lucide-react';
 import { SortDescIcon } from '../icons/SortDescIcon';
@@ -66,11 +66,7 @@ const ProfilePage = ({ data }: {
       .catch(error => {
         setFollowingList((current) => current.slice(0, -1));
         setCurrentFollowers((current) => current.slice(0, -1));
-        toast({
-          description:
-            "Something went wrong while toggling share. Make sure your bot is allowed under OpenAI moderation rules. If the error persists, please contact the developers.",
-          variant: "destructive",
-        });
+        toast.error("Something went wrong while toggling share. Make sure your bot is allowed under OpenAI moderation rules. If the error persists, please contact the developers.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
       });
   }
 
@@ -85,10 +81,7 @@ const ProfilePage = ({ data }: {
         setFollowingList((current) => current.length ? [...current, deleteFollow] : [deleteFollow]);
         setCurrentFollowers((current) => current.length ? [...current, deleteFollower] : [deleteFollower]);
         console.log(error);
-        toast({
-          description: `Something went wrong in character deletion.`,
-          variant: "destructive",
-        });
+        toast.error("Something went wrong in character deletion.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
       })
   }
 

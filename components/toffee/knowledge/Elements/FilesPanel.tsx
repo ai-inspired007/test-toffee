@@ -4,7 +4,7 @@ import Image from "next/image";
 import { getFileIcon } from "./UploadFiles";
 import { RiDeleteBin6Line } from "../../icons/Files";
 import { PlusIcon, X } from "lucide-react";
-import Modal from "../../Modal";
+import Modal from "../../../ui/Modal";
 import axios from "axios";
 import { useState } from "react";
 import { formatBytes } from "./EditCandy";

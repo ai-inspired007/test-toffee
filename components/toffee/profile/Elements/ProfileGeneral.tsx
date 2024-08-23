@@ -9,8 +9,8 @@ import { Trash2 } from 'lucide-react';
 import { UserSettings_shared } from "@prisma/client";
 import { UserFollowingIcon } from "../../icons/ProfileIcons";
 import { validImageInputTypes } from "@/lib/upload/util";
-import Section from "../../Section";
-import InputField from "../../InputField";
+import Section from "../../../ui/Section";
+import InputField from "../../../ui/InputField";
 type ProfileGeneralProps = {
   editAvatar: string | null;
   setEditAvatar: Dispatch<SetStateAction<string | null>>;

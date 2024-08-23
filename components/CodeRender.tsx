@@ -2,7 +2,7 @@ import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Button } from "./ui/button";
-import { toast } from "./ui/use-toast";
+import { toast } from "react-toastify";
 import { Copy } from "lucide-react";
 
 import remarkMath from "remark-math";
@@ -14,9 +14,7 @@ const onCopy = (text: string) => {
     return;
   }
   navigator.clipboard.writeText(text);
-  toast({
-    description: "Code copied to clipboard.",
-  });
+  toast.success("Code copied to clipboard.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
 };
 
 export const CodeRender = ({ text }: { text: string }) => {

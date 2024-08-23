@@ -3,7 +3,6 @@ import { Providers } from "./providers";
 
 import "./styles/globals.css";
 import "./slide.css";
-import { Toaster } from "@/components/ui/toaster";
 import { ToastContainer } from "react-toastify";
 import { Subscription } from "@/components/toffee/Subscription";
 import "react-toastify/dist/ReactToastify.css";
@@ -41,7 +40,6 @@ export default async function RootLayout({
           {children}
           {!isProUser && session && <Subscription />}
         </Providers>
-        <Toaster />
         <ToastContainer />
       </body>
     </html>

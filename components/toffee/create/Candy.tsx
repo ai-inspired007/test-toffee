@@ -5,7 +5,7 @@ import UploadFiles from "./Elements/UploadFiles";
 import AddText from "./Elements/AddText";
 import AddLink from "./Elements/AddLink";
 import { X } from 'lucide-react';
-import Loading from "../Loading";
+import Loading from "../../ui/Loading";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { RiGlobalLine } from "../icons/GlobalLine";

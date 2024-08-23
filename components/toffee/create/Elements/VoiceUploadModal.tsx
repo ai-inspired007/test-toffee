@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useRef, useState } from "react";
-import Modal from "../../Modal";
+import Modal from "../../../ui/Modal";
 import {
   RiFilePdfLine,
   RiFileTextLine,

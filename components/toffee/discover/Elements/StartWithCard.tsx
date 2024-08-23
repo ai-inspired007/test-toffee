@@ -1,5 +1,5 @@
 import { Character } from "@prisma/client";
-import { BotAvatar } from "@/components/BotAvatar";
+import { BotAvatar } from "@/components/toffee/BotAvatar";
 import React, { useEffect, useState } from 'react';  
 const StartWithCard = ({
   character,

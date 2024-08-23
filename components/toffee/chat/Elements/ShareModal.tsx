@@ -1,5 +1,5 @@
 import { Dispatch } from "react";
-import Modal from "../../Modal";
+import Modal from "../../../ui/Modal";
 import { X } from "lucide-react";
 import { WhatsappIcon, TelegramIcon, TwitterIcon, FacebookIcon, LinkIcon } from '../../icons/Socials';
 import { Star7, Star8, Star9, Star10, UploadIcon } from "../../icons/ShareChatIcons";

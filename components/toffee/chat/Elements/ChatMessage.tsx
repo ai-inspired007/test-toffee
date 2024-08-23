@@ -3,9 +3,9 @@ import { StreamingCompletionContext } from "@/lib/chat/context";
 import { CodeRender } from "@/components/CodeRender";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { UserAvatar } from "@/components/UserAvatar";
-import { BotAvatar } from "@/components/BotAvatar";
-import { useToast } from "@/components/ui/use-toast";
+import { UserAvatar } from "@/components/toffee/UserAvatar";
+import { BotAvatar } from "@/components/toffee/BotAvatar";
+import { toast } from "react-toastify";
 import { getFileIcon } from "@/components/toffee/knowledge/Elements/UploadFiles";
 import {
   Copy,
@@ -57,7 +57,6 @@ export const ChatMessage = ({
   onDeleteMessage,
   onReGeneration
 }: ChatMessageProps) => {
-  const { toast } = useToast();
   const streamingCompletionContext = useContext(StreamingCompletionContext);
   const [displayText, setDisplayText] = useState("");
   let p_content: string = "";
@@ -69,9 +68,7 @@ export const ChatMessage = ({
       return;
     }
     navigator.clipboard.writeText(p_content);
-    toast({
-      description: "Message copied to clipboard.",
-    });
+    toast.success("Message copied to clipboard.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
   };
 
   const onVoice = async () => {

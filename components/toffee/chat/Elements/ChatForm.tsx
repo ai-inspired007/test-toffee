@@ -12,7 +12,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { Input } from "@/components/ui/input";
 import { SendHorizonal, StopCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RiDeleteBin6Line } from "@/components/toffee/icons/Files";
@@ -20,7 +19,7 @@ import Image from "next/image";
 
 import { ImageUpload } from "./ImageUpload";
 import { Paperclip, Headphones } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "react-toastify";
 import { uploadCharacterPic, validImageInputTypes } from "@/lib/upload/util";
 import { StreamingCompletionContext } from "@/lib/chat/context";
 import { Textarea } from "@/components/ui/textarea";
@@ -120,10 +119,7 @@ export const ChatForm = forwardRef<HTMLInputElement, ChatFormProps>(
             setFileType(newFile.type);
           })
           .catch((err: any) => {
-            toast({
-              description: err.response.data,
-              variant: "destructive",
-            });
+            toast.error(`${err.response.data}`, {theme: "colored", autoClose: 1500, hideProgressBar: true,});
           });
       } else {
         setFile(null);
@@ -252,12 +248,9 @@ export const ChatForm = forwardRef<HTMLInputElement, ChatFormProps>(
                   const file = files[0];
                   console.log(file.type);
                   if (!validImageInputTypes.includes(file.type)) {
-                    toast({
-                      variant: "destructive",
-                      description: `Invalid image input type. ${validImageInputTypes.join(
+                    toast.error(`Invalid image input type. ${validImageInputTypes.join(
                         ", ",
-                      )} are accepted.`,
-                    });
+                      )} are accepted.`, {theme: "colored", autoClose: 1500, hideProgressBar: true,});
                     return;
                   }
 

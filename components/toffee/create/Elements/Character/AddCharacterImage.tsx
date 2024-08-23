@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import UploadCharacterImage from "./CharacterImage";
 import { WandDropDown } from "../WandDropDown";
-import Modal from "@/components/toffee/Modal";
+import Modal from "@/components/ui/Modal";
 import Image from "next/image";
 import axios from "axios";
 

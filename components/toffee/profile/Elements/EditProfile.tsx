@@ -6,7 +6,7 @@ import { UserSettings } from "@prisma/client";
 import ProfileGeneral from "./ProfileGeneral";
 import ProfileAccount from "./ProfileAccount";
 import { ProfileConnections } from "./ProfileConnections";
-import Spinner from "../../Spinner"; // Assuming you have a Spinner component  
+import Spinner from "../../../ui/Spinner"; // Assuming you have a Spinner component  
 
 const EditProfile = ({
   userId,

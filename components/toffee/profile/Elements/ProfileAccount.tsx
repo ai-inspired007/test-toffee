@@ -3,11 +3,11 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Subscription, CancelPro } from "./Subscription";
 import { Google } from "../../icons/ProfileIcons";
 import SelectComponent, { ItemProps } from "./SelectComponent";
-import Modal from "../../Modal";
+import Modal from "../../../ui/Modal";
 import { toast } from "react-toastify";
-import Section from "../../Section";
-import Spinner from "../../Spinner";
-import InputField from "../../InputField";
+import Section from "../../../ui/Section";
+import Spinner from "../../../ui/Spinner";
+import InputField from "../../../ui/InputField";
 type ProfileAccountProps = {
   userId: string;
   password: string | null;

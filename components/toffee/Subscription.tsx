@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Modal from "./Modal"
+import Modal from "../ui/Modal"
 import { GroupIcon } from "./icons/Group";
 import { X } from "lucide-react";
 import { Check } from "lucide-react";

@@ -1,5 +1,5 @@
 import React, { Dispatch, useEffect, useState } from "react";
-import Modal from "../../Modal";
+import Modal from "../../../ui/Modal";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { Search } from "lucide-react";

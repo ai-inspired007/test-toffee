@@ -1,5 +1,5 @@
 import { Dispatch, useState } from "react";
-import Modal from "../../Modal";
+import Modal from "../../../ui/Modal";
 import { X } from "lucide-react";
 import SelectReason, { ReasonProps } from "./SelectReason";
 import axios from "axios";

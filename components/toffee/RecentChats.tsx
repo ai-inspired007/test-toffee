@@ -4,7 +4,7 @@ import { CheckIcon } from "@radix-ui/react-icons";
 import { User2 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { BotAvatar } from "@/components/BotAvatar";
+import { BotAvatar } from "@/components/toffee/BotAvatar";
 import { Character } from "@prisma/client";
 const RecentChats = ({ characters }: { characters: Character[] }) => {
   const [orderby, setOrderBy] = useState("Recent");

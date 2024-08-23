@@ -1,7 +1,7 @@
 import { RiFilePdfLine, RiFileTextLine, RiFileWordLine, RiFileEditLine, RiDeleteBin6Line, RiFileUploadLine, MingcuteCheckLine, MdiFileImageOutline, MaterialSymbolsVideoFileOutline, MdiFileTableOutline } from "../../icons/Files";
 import { CandyFile } from "../Create";
 import React, { useRef, Dispatch, SetStateAction, useState } from "react";
-import Modal from "../../Modal";
+import Modal from "../../../ui/Modal";
 import { MdiInformationOutline } from "../../icons/InformationLine";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";

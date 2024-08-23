@@ -8,7 +8,7 @@ import { ChatForm } from "./Elements/ChatForm";
 import { ChatMessages } from "./Elements/ChatMessages";
 import { ChatMessageProps } from "./Elements/ChatMessage";
 import axios from "axios";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "react-toastify";
 import { useAIContext } from "@/contexts/AIProvider";
 import { uploadCharacterPic } from "@/lib/upload/util";
 import { StreamingCompletionContext } from "@/lib/chat/context";
@@ -103,11 +103,7 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
         updateAPI("Llama");
         toggleBlocked(true);
       }
-      toast({
-        description: `${message}`,
-        variant: "destructive",
-        duration: 14000,
-      });
+      toast.error(`${message}`, {theme: "colored", autoClose: 1500, hideProgressBar: true,});
       const errorMessage: ChatMessageProps = {
         role: "assistant",
         content: `There was an error sending this message. If the issue persists, contact the developers.`,
@@ -128,17 +124,12 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
   const onClear = async () => {
     try {
       await axios.delete(`/api/character/${character.id}/clear`);
-      toast({
-        description: "Successfully cleared the chat.",
-      });
+      toast.success("Successfully cleared the chat.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
       toggleBlocked(false);
       setMessages([]);
     } catch (error) {
       console.log(error);
-      toast({
-        description: `Something went wrong. Please wait a bit and try again. If the error persists, contact a developer.`,
-        variant: "destructive",
-      });
+      toast.error("Something went wrong. Please wait a bit and try again. If the error persists, contact a developer.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
     }
   };
 
@@ -201,11 +192,7 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     if (uploadLoading) {
-      toast({
-        description: "Image is still uploading.",
-        variant: "destructive",
-        duration: 1000,
-      });
+      toast.success("Image is still uploading.", {theme: "colored", autoClose: 1000, hideProgressBar: true,});
       return;
     } // can't submit if image is still uploading
 
@@ -300,11 +287,7 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
           image_url: null,
         };
         setMessages((current) => [...current, aiMessage]);
-        toast({
-          description: "Failed during post processing. Contact developers if this issue persists.",
-          variant: "destructive",
-          duration: 1000,
-        });
+        toast.success("Failed during post processing. Contact developers if this issue persists.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
       }
     }
   }

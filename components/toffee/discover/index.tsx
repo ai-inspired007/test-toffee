@@ -23,7 +23,7 @@ import FeaturedCard from "./Elements/FeaturedCard";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "react-responsive";
-import Loading from "../Loading";
+import Loading from "../../ui/Loading";
 import { DiscordIcon, TwitterIcon, InstagramIcon, LinkedinIcon, HomeBottomIcon  } from "../icons/HomeIcons";
 interface Character extends BaseCharacterProps {
   _count: {

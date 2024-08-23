@@ -1,6 +1,6 @@
 import { UploadToGCSInput } from "@/app/api/upload/_schema";
 import { GCPBucketNames } from "@/app/api/upload/_schema";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "react-toastify";
 
 export const validImageInputTypes = [
   "image/jpeg",
@@ -39,12 +39,9 @@ export const uploadCharacterPic = async (
     return;
   }
   if (!validImageInputTypes.includes(img.type)) {
-    toast({
-      variant: "destructive",
-      description: `Invalid image input type. ${validImageInputTypes.join(
+    toast.error(`Invalid image input type. ${validImageInputTypes.join(
         ", ",
-      )} are accepted.`,
-    });
+      )} are accepted.`, {theme: "colored", autoClose: 1500, hideProgressBar: true,});
     return;
   }
 
@@ -77,16 +74,9 @@ export const uploadCharacterPic = async (
     // console.log("ImageUpload.tsx", e);
     console.log((e.message as string).indexOf("moderation-image") > -1);
     if ((e.message as string).indexOf("moderation-image") > -1) {
-      toast({
-        variant: "destructive",
-        description:
-          "That image was flagged for moderation purposes. Contact devs to resolve.",
-      });
+      toast.error("That image was flagged for moderation purposes. Contact devs to resolve.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
     } else {
-      toast({
-        variant: "destructive",
-        description: "Upload failed. Please wait a bit and try again.",
-      });
+      toast.error("Upload failed. Please wait a bit and try again.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
     }
   }
 };

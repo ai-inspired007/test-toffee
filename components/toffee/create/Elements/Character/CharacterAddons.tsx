@@ -7,7 +7,7 @@ import { GitFork2 } from "@/components/toffee/icons/Fork";
 import BotPreview from "./BotPreview";
 import StepButton from "./StepButton";
 import { TKnowledgePack } from "@/lib/types";
-import Modal from "@/components/toffee/Modal";
+import Modal from "@/components/ui/Modal";
 import { MdiInformationOutline } from "@/components/toffee/icons/InformationLine";
 export const CharacterAddons = ({
   name,

@@ -5,7 +5,7 @@ import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { MdiInformationOutline } from "../../icons/InformationLine";
 import { X } from 'lucide-react';
 import { RiLinkM } from '../../icons/Fork';
-import Modal from "../../Modal";
+import Modal from "../../../ui/Modal";
 import axios from 'axios';
 import Tooltip from '../../Tooltip';
 

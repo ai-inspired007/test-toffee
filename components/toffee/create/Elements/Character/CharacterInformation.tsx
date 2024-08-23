@@ -4,7 +4,7 @@ import { Tag } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import "@yaireo/tagify/dist/tagify.css";
 import "../tagify.css";
-import TextareaBlock from "@/components/toffee/TextareaBlock";
+import TextareaBlock from "@/components/ui/TextareaBlock";
 import BotPreview from "./BotPreview";
 import StepButton from "./StepButton";
 interface CharacterInformationProps {

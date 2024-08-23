@@ -1,2 +1,2 @@
-import Loading from "@/components/toffee/Loading";
+import Loading from "@/components/ui/Loading";
 export default Loading;

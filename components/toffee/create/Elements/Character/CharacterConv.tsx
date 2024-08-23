@@ -2,7 +2,7 @@
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { RiMessage3Line } from "@/components/toffee/icons/MessageLine";
-import TextareaBlock from "@/components/toffee/TextareaBlock";
+import TextareaBlock from "@/components/ui/TextareaBlock";
 import { Trash2 } from "lucide-react";
 import BotPreview from "./BotPreview";
 import StepButton from "./StepButton";
