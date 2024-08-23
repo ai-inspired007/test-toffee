@@ -25,36 +25,63 @@ export async function PUT(
       return new NextResponse("User not authorized.", { status: 401 });
     }
 
-    const data = await req.formData()
-    const name = data.get('name') as string
-    const avatar = data.get('avatar') as File
+    const data = await req.formData();
+    const avatarFile = data.get('avatarFile') as File | null;
+    const bannerFile = data.get('bannerFile') as File | null;
+    const userInfo = data.get('userInfo') as string;
+    const body = JSON.parse(userInfo);
+    const {
+      avatar,
+      banner,
+      name,
+      email,
+      shared,
+      language,
+    } = body;
 
-    let avatarUrl: string | null= '';
-    if(avatar){
-      const imgPath = generateFilePath(avatar.name);
-      avatarUrl = await uploadFile(avatar, imgPath);
+    let avatarUrl = avatar;
+    if (avatarFile) {
+      const imgPath = generateFilePath(avatarFile.name);
+      avatarUrl = await uploadFile(avatarFile, imgPath);
+    }
+
+    let bannerUrl = banner;
+    if (bannerFile) {
+      const imgPath = generateFilePath(bannerFile.name);
+      bannerUrl = await uploadFile(bannerFile, imgPath);
     }
 
     const nowUser = await prismadb.userSettings.findUnique({
       where: {
         userId: params.userId
       }
-    })
+    });
+
+    if (!nowUser) {
+      return new NextResponse('User not found.', { status: 404 });
+    }
+
+    const updateData: Partial<typeof body> = {};
+
+    if (avatarUrl !== null) updateData.profile_image = avatarUrl;
+    if (bannerUrl !== null) updateData.banner_image = bannerUrl;
+    if (name !== undefined) updateData.name = name;
+    if (email !== undefined) updateData.email = email;
+    if (shared !== undefined) updateData.shared = shared;
+    if (language !== undefined) updateData.language = language;
 
     const updatedUser = await prismadb.userSettings.update({
       where: {
         userId: params.userId
       },
-      data: {
-        name,
-        profile_image: avatar ? avatarUrl : nowUser?.profile_image,
-      }
-    })
+      data: updateData
+    });
+
     if (!updatedUser) {
       return new NextResponse('User not found.', { status: 404 });
     }
 
-    return NextResponse.json("Success", {status: 200})
+    return NextResponse.json("Success", { status: 200 });
   } catch (error) {
     console.error('[FORM_PARSE_ERROR]', error);
     return NextResponse.json({ error: 'Internal Error' }, { status: 500 });

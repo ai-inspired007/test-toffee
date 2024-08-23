@@ -1,6 +1,7 @@
 import CharacterCreate from "@/components/toffee/create/Character";
 import prismadb from "@/lib/prismadb";
 import { auth } from "@/auth";
+import { getCandies, getCharacters } from "@/lib/query";
 export default async function ChracterreatePage () {
    const session = await auth();
    const userId = session?.user.id
@@ -11,16 +12,6 @@ export default async function ChracterreatePage () {
          tags: true
       },
    });
-   const addons = await prismadb.knowledgePack.findMany({
-      where: {
-         AND: {
-            OR: [
-               {userId: "public" || userId},
-               {sharing: "public"}
-            ],
-            type: "PACK"
-         }
-      }
-   })
+   const addons = await getCandies(userId) 
    return <CharacterCreate categorielist={categories} addons={addons}/>
 }

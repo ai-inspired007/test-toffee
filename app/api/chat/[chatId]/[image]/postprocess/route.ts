@@ -88,6 +88,24 @@ export async function POST(
       }
     })
 
+    // if (messageList.length > 30) {
+    //   let indexer = Indexer.getInstance();
+    //   (await indexer).indexIncomingChat(
+    //     messageList,
+    //     params.chatId,
+    //     userId,
+    //     character.name
+    //   );
+    //   await prismadb.message.updateMany({
+    //     where: {
+    //       OR: messageList.map(item => ({id: item.id}))
+    //     },
+    //     data: {
+    //       isEmbedded: true
+    //     }
+    //   })
+    // }
+
     const promptMessage = {
       id: userMessage.id,
       role: userMessage.role,
@@ -100,6 +118,13 @@ export async function POST(
     }
 
     return NextResponse.json({ promptMessage, completionMessage, total: messageList.length }, { status: 200 });
+
+    // if(outputMessageId){  
+    //   console.log("[OUTPUT_MESSAGE]:", outputMessageId)  
+    //   return NextResponse.json({ promptMessageId: userMessage.id, completionMessageId: outputMessageId }, { status: 200 });  
+    // } else {  
+    //   return new NextResponse("[CHAT_POSTPROCESS] Assistant message was not created successfully", { status: 500 });  
+    // }  
   } catch (error) {  
     console.error(error);  
     return new NextResponse("[CHAT_POSTPROCESS] Internal server error", { status: 500 });  

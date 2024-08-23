@@ -65,7 +65,7 @@ const SelectSharing = ({options, selectedOption, setSelectedOption}: SelectProps
           </div>
         )}
       </div>
-      <div className="text-xs text-text-tertiary font-inter mt-2.5">
+      <div className="text-xs text-text-tertiary  mt-2.5">
         {"When public, anyone can see the type of file and any associated labels"}
       </div>
     </div>

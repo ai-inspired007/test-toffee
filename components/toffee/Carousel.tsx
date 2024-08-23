@@ -1,10 +1,14 @@
 import React, { useRef, forwardRef, useImperativeHandle, useState, useEffect } from 'react';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 type DataProps = {
   title: string;
   children: React.ReactNode;
   className: string;
+  link?: string;
+  row?: number;
+  col?: number;
 };
 
 type CarouselHandle = {
@@ -15,7 +19,7 @@ type CarouselHandle = {
 const Carousel = forwardRef<
   CarouselHandle,
   React.HTMLAttributes<HTMLDivElement> & DataProps
->(({ title, children, className }, ref) => {
+>(({ title, children, className, link, col, row }, ref) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
@@ -70,7 +74,7 @@ const Carousel = forwardRef<
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-row justify-between text-white">
-        <div className={className}>{title}</div>
+        <Link href={link ? link : "#"} className={className}>{title}</Link>
         {isScrollable && (
           <div className="flex flex-row gap-2 items-center pr-6">
             <span
@@ -101,7 +105,10 @@ const Carousel = forwardRef<
         )}
       </div>
       <div
-        className={`flex ${showAll ? 'flex-wrap' : 'flex-row'} gap-4 overflow-auto no-scrollbar`}
+        className={`${showAll
+            ? ' flex flex-wrap flex-row'
+            : row || col ?`grid ${row ? `grid-flow-col grid-rows-${row}` : ''} ${col ? `grid-cols-${col}` : ''}`:"flex flex-row"
+          } ${!showAll && 'no-scrollbar overflow-auto'} sm:gap-4 gap-2 `}
         ref={scrollContainerRef}
         onScroll={handleScroll}
       >

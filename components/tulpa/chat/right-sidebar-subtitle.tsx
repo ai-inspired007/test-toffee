@@ -9,10 +9,10 @@ export function RightSidebarSubtitle({
 }: RightSidebarSubtitleProps) {
   return (
     <div className="flex flex-row justify-center space-x-1">
-      <span className="text-sm font-normal leading-snug text-neutral-500">
+      <span className="text-sm font-light leading-snug text-neutral-500">
         {label}
       </span>
-      <span className="text-sm font-normal leading-snug text-zinc-400">
+      <span className="text-sm font-light leading-snug text-zinc-400">
         {value}
       </span>
     </div>

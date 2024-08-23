@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function POST(req: NextRequest) {
   const url = req.url;
-  const voiceId = "TVJU2ZYIJJZr8TDEVxBb"; // replace "default_voice_id" with your default voice ID if needed
+  const voiceId = "FGY2WhTYpPnrIDTdsKH5"; // replace "default_voice_id" with your default voice ID if needed
   const modelId = "eleven_multilingual_v2";
   const message: Message = await req.json();
   const start = Date.now();

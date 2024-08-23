@@ -57,7 +57,7 @@ model APAIKey {
 
 model CharacterKnowledgePack {
   id              String        @id @default(uuid())
-  characterId     String        @unique
+  characterId     String
   knowledgePackId String
   character       Character     @relation(fields: [characterId], references: [id], onDelete: Cascade)
   knowledgePack   KnowledgePack @relation(fields: [knowledgePackId], references: [id], onDelete: Cascade)
@@ -70,7 +70,7 @@ model Character {
   userId                  String
   image                   String
   name                    String                   @db.Text
-  description             String
+  description             String                   @db.LongText
   instructions            String                   @db.LongText
   greeting                String                   @db.MediumText
   seed                    String                   @db.LongText
@@ -91,6 +91,19 @@ model Character {
 
   @@index([categoryId])
   @@fulltext([name])
+}
+
+model CharacterFeedback {
+  id            String   @id @default(uuid())
+  createdAt     DateTime @default(now())
+  userId        String
+  characterId   String
+  like          Boolean?
+  star          Boolean? @default(false)
+  reportContent String?  @db.Text
+  reportReason  String?
+
+  @@index([userId, characterId])
 }
 
 model Utility {
@@ -233,7 +246,7 @@ model KnowledgeChat {
 }
 
 model UserSettings {
-  userId                String      @id
+  userId                String               @id
   name                  String?
   email                 String?
   following             Int?
@@ -245,12 +258,16 @@ model UserSettings {
   chat_background_image String?
   profile_image         String?
   password              String?
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
-  plan                  Plan        @default(FREE)
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  plan                  Plan                 @default(FREE)
   customerId            String?
+  banner_image          String?
+  language              String?
+  shared                UserSettings_shared? @default(Private)
   characters            Character[]
-
+  mta                   Boolean              @default(false)
+  qr_code               String               @default("")
   @@index([userId])
 }
 
@@ -305,4 +322,10 @@ enum KnowledgePackType {
 enum Role {
   user
   assistant
+}
+
+enum UserSettings_shared {
+  Public
+  Following
+  Private
 }

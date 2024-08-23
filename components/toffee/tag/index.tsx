@@ -6,105 +6,48 @@ import {
   useCallback,
   ChangeEvent,
 } from "react";
-import { Character as BaseCharacterProps, Category as BaseCategory } from "@prisma/client";
+import { Character as BaseCharacterProps, Category as BaseCategory, Tag } from "@prisma/client";
 import React from "react";
 import CharacterCard from "@/components/toffee/CharacterCard";
 import Image from "next/image";
 import { SortDescIcon } from "../icons/SortDescIcon";
+import { formatNumber } from "@/lib/utils";
+import { useMediaQuery } from "react-responsive";
+import MobileNavPanel from "../MobileNav";
 interface Character extends BaseCharacterProps {
   _count: {
     messages: number;
   };
 }
-interface Category extends BaseCategory {
-  characters: Character[]
-}
-function debounce<F extends (...args: any[]) => any>(
-  func: F,
-  delay: number,
-): (...args: Parameters<F>) => void {
-  let timerId: NodeJS.Timeout;
-
-  return (...args: Parameters<F>) => {
-    clearTimeout(timerId);
-    timerId = setTimeout(() => func(...args), delay);
-  };
-}
-
-export function TagPage() {
-
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<unknown>(null);
+export function TagPage({ tag, characters, chats }: { tag: Tag | null, characters: Character[], chats: number }) {
   const [query, setQuery] = useState<string | null>(null);
   const handleQuery = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
-  const fetchCharacters = async (params?: string) => {
-    try {
-      setLoading(true);
-      const url = params
-        ? `/api/discover?params=${encodeURIComponent(params)}`
-        : "/api/discover";
-
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log(data)
-      setCharacters(data.characters);
-      setCategories(data.categories);
-      setLoading(false);
-    } catch (error) {
-      console.error("Failed to fetch characters:", error);
-      setError(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Using useCallback to ensure stability across renders  
-  const debouncedFetchCharacters = useCallback(
-    debounce((query) => {
-      fetchCharacters(query);
-    }, 1000),
-    [],
-  );
-
-  useEffect(() => {
-    // Fire once on component mount if no query is available  
-    if (query === null) {
-      fetchCharacters();
-    } else {
-      debouncedFetchCharacters(query);
-    }
-  }, [query, debouncedFetchCharacters]);
-
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
   return (
-    <div className="h-screen w-full p-2 overflow-y-auto no-scrollbar">
+    <div className="h-screen w-full sm:p-2 overflow-y-auto no-scrollbar mb-20 sm:mb-0">
       <div className="flex flex-col items-center justify-start rounded-2xl bg-[#121212] min-h-full w-full overflow-auto">
         <div className="w-full rounded-t-2xl h-[228px] flex flex-row items-end px-6 gap-8 justify-end relative pb-6">
           <div className="flex flex-col gap-0.5 z-20">
-            <h1 className="text-white font-inter text-[40px] font-[550]">#Jujutsu Kaisen</h1>
-            <div className="flex flex-row text-text-additional font-inter text-sm items-center gap-3 tracking-wide font-light">
-              <span>524 Characters</span>
+            <h1 className="text-white  text-[40px] font-[550]"># {tag?.name}</h1>
+            <div className="flex flex-row text-text-additional  text-sm items-center gap-3 tracking-wide font-light">
+              <span>{characters.length} Characters</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4" fill="none">
                 <circle cx="2" cy="2" r="2" fill="#B1B1B1" />
               </svg>
-              <span>635.5k Chats</span>
+              <span>{formatNumber(chats)} Chats</span>
             </div>
           </div>
           <div className="flex flex-row gap-3 items-center z-20 justify-end mt-auto ml-auto">
-            <span className="font-inter text-sm font-medium text-white">Popularity</span>
-            <SortDescIcon className="w-6 h-6 text-[#B1B1B1]"/>
+            <span className=" text-sm font-medium text-white">Popularity</span>
+            <SortDescIcon className="w-6 h-6 text-[#B1B1B1]" />
           </div>
           <div className="bg-black/70 w-full h-full absolute z-10 top-0 left-0" />
           <Image src={"/candies/candy1.png"} alt="Candy" className="w-full h-full absolute object-cover top-0 left-0" height={0} width={0} sizes="100vw" />
         </div>
         <div className="w-full h-[96px] bg-gradient-to-b from-[#3FA6F333]  to-[#3FA6F300]">
-          <label className="sticky top-0 z-50 w-full rounded-t-lg bg-opacity-60 py-3 text-gray-400 backdrop-blur-lg backdrop-filter focus-within:text-gray-600 flex items-center border-b border-white/10 font-inter">
+          <label className="sticky top-0 z-50 w-full rounded-t-lg bg-opacity-60 py-3 text-gray-400 backdrop-blur-lg backdrop-filter focus-within:text-gray-600 flex items-center border-b border-white/10 ">
             <svg
               width="24"
               height="24"
@@ -126,15 +69,13 @@ export function TagPage() {
             />
           </label>
         </div>
-        {!loading ?
-          <div className="flex w-full flex-row gap-6 pl-6 pt-0 pb-6 flex-wrap">
-            {characters.map((character, i) => (
+        <div className="flex w-full flex-row sm:gap-6 gap-4 sm:p-6 p-4 flex-wrap">
+          {characters.map((character, i) => (
             <CharacterCard character={character} key={i} />
-            ))}
-          </div>
-          :
-          null}
+          ))}
+        </div>
       </div>
+      {isMobile && <MobileNavPanel />}
     </div>
   );
 }

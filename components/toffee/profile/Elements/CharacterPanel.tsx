@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 const Characters = ({ characters, type }: { characters: Partial<Character & { _count: { messages: number } }>[], type: string }) => {
   const router = useRouter();
   return (
-    <div className="flex flex-row flex-wrap gap-2 justify-center min-h-full w-full">
+    <div className={`flex flex-wrap gap-2 flex-grow min-h-full w-full ${characters.length ? "justify-start" : "justify-center"}`}>
       {characters.length > 0 ?
         characters.map((character, index) => <CharacterCard key={index} character={character} link={`/character/${character.id}`} />) :
         (

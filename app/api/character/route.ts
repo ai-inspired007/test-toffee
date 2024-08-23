@@ -6,24 +6,14 @@ import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { uploadFile } from '@/lib/gcs';
 import qs from "qs";
+import { cosinesim } from "@/lib/utils";
 
-export const maxDuration = 30;
-const MAX_CHARS = 10;
-const cosinesim = (A: number[], B: number[]) => {
-  let dotproduct = 0;
-  let mA = 0;
-  let mB = 0;
-
-  for (let i = 0; i < A.length; i++) {
-    dotproduct += A[i] * B[i];
-    mA += A[i] * A[i];
-    mB += B[i] * B[i];
-  }
-
-  mA = Math.sqrt(mA);
-  mB = Math.sqrt(mB);
-  return mA === 0 || mB === 0 ? 1 : dotproduct / (mA * mB);
-};
+const MAX_CHARS = 10; 
+const MAX_NAME_LENGTH = 255;
+const MAX_DESC_LENGTH = 255;
+const MAX_INSTR_LENGTH = 1024;
+const MAX_GREETING_LENGTH = 1024;
+const MAX_SEED_LENGTH = 2048;
 
 function generateFilePath(fileName: string): string {
   const timestamp = new Date().toISOString().replace(/[:-]/g, '').replace(/\..+/, '');
@@ -33,12 +23,11 @@ function generateFilePath(fileName: string): string {
 
 export async function POST(req: Request) {
   try {
-    // const body = await req.json();
     const session = await auth();
     const user = session?.user;
     const data = await req.formData();
-    const img = data.get('imgFile') as File
-    const mainData = data.get('data') as string
+    const img = data.get('imgFile') as File;
+    const mainData = data.get('data') as string;
     const body = JSON.parse(mainData);
     const {
       name,
@@ -46,51 +35,45 @@ export async function POST(req: Request) {
       instructions,
       seed,
       categoryId,
-      addedCategory,
       greeting,
       tags,
-      addons
+      addons,
+      utility,
+      storytelling
     } = body;
     if (!user || !user.id) {
       return new NextResponse("User not logged in.", { status: 401 });
     }
 
-    if (
-      !img ||
-      !name ||
-      !description ||
-      !seed ||
-      !instructions ||
-      !categoryId
-    ) {
+    if (!img || !name || !description || !seed || !instructions || !categoryId) {
       return new NextResponse("Missing a required field.", { status: 400 });
     }
 
+    // if (
+    //   name.length > MAX_NAME_LENGTH ||
+    //   description.length > MAX_DESC_LENGTH ||
+    //   instructions.length > MAX_INSTR_LENGTH ||
+    //   seed.length > MAX_SEED_LENGTH ||
+    //   (greeting && greeting.length > MAX_GREETING_LENGTH)
+    // ) {
+    //   return new NextResponse("One or more fields exceed the maximum allowed length.", { status: 400 });
+    // }
+
+    // Handle image upload  
     let imageUrl: string | null = '';
     if (img) {
       const imgPath = generateFilePath(img.name);
       imageUrl = await uploadFile(img, imgPath);
     }
 
-    // const openai = new OpenAI();
-
-    // const violate = await openai.moderations.create({
-    //   input: name + "\n" + description,
-    // });
-
-    // for (let result of violate.results) {
-    //   if (result.flagged) {
-    //     return new NextResponse("moderation-prompt", { status: 401 });
-    //   }
-    // }
-
+    // Rate limiting check  
     const identifier = req.url + "-" + user.id;
     const { success } = await rateLimit(identifier, 3);
-
     if (!success) {
       return new NextResponse("Rate limit exceeded", { status: 429 });
     }
 
+    // Character creation count check  
     const num = await prismadb.character.count({
       where: {
         userId: user.id,
@@ -104,52 +87,36 @@ export async function POST(req: Request) {
     const character = await prismadb.character.create({
       data: {
         categoryId,
-        userId: user.id,
-        image: imageUrl ? imageUrl: "",
+        userId: user?.id || "public",
+        image: imageUrl || "",
         name,
         description,
         instructions,
         seed,
-        greeting:
-          greeting ||
-          `Hi, I'm ${name}, ${description}. What do you want to chat about today?`,
-        utility: body.utility
-          ? {
-            create: {
-              // Add properties for the utility object here
-              ...body.utility,
-            },
-          }
-          : undefined,
-        storytelling: body.storytelling
-          ? {
-            create: {
-              // Add properties for the storytelling object here
-              ...body.storytelling,
-            },
-          }
-          : undefined,
+        greeting: greeting || `Hi, I'm ${name}. What do you want to chat about today?`,
+        utility: utility ? { create: { ...utility } } : undefined,
+        storytelling: storytelling ? { create: { ...storytelling } } : undefined,
         tags: {
           create: tags.map((tagId: string) => ({ tagId })),
         },
       },
     });
+
     if (addons && addons.length > 0) {  
       await prismadb.characterKnowledgePack.createMany({  
         data: addons.map((addonId: string) => ({  
           characterId: character.id,  
-          userId: user.id,  
           knowledgePackId: addonId,  
         })),  
       });  
-    }
+    }  
+
     return NextResponse.json(character);
   } catch (error) {
-    console.log("[CHARACTER_POST]", error);
+    console.error("[CHARACTER_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
-
 export async function GET(req: Request) {
   try {
     const rawParams = req.url.split("?")[1];

@@ -153,7 +153,7 @@ const EditCandy = ({
           <AddText texts={addedTexts} setTexts={setTexts} />
           <AddLink links={addedLinks} setLinks={setLinks} />
           <div className="flex items-center justify-between w-full h-[56px] mt-6 bg-white rounded-full">
-            <span className="w-[300px] ml-6 my-5 text-black font-inter text-sm">Careful - you have unsaved changes!</span>
+            <span className="w-[300px] ml-6 my-5 text-black  text-sm">Careful - you have unsaved changes!</span>
             <button onClick={() => handleUpdate()} className="flex w-[134px] justify-center mr-4 cursor-pointer bg-gradient-to-r from-[#C28851] to-[#B77536] rounded-full text-center text-white px-4 py-1.5 font-normal text-sm border border-white/20">
               {isLoading ? <Image
                 src={"/loading.svg"}

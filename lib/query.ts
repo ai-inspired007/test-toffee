@@ -204,3 +204,10 @@ export const getUsers = async (userId?:string) => {
   }))
   return userWithCharacterCount
 }
+
+export const getTag = async(tagId: string | number) => {
+  const tag = await prismadb.tag.findUnique({
+    where: {id: tagId as string}
+  })
+  return tag
+}

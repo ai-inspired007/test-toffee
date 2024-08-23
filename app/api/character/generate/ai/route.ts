@@ -20,39 +20,17 @@ export async function POST(
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
     let textTypes = ["short", "long", "language", "idea", "spell", "thone"];
-    
-    // const completion: any = await openai.chat.completions.create({
-    //   model: 'gpt-4o',
-    //   // stream: true,
-    //   max_tokens: 300,
-    //   messages: [
-    //     { role: "system", content: "Analyze user question and provide prompt for generating Character of high quality." },
-    //     {
-    //       role: "user",
-    //       content: prompt
-    //     }
-    //   ],
-    // });
-
-    // const characterPrompt = completion.choices[0].message.content.trim();
-    // console.log(characterPrompt)
 
     if (type === "image") {
-      const image = await openai.images.generate({
+      const images = await openai.images.generate({
         model: "dall-e-3",
         prompt: prompt,
         n: 1,
         size: "1024x1024",
         response_format: "b64_json"
       });
-  
-      const base64String: any = image.data[0].b64_json;
-      const parts = base64String.split(';base64,');
-      const imageData = parts[1] ? parts[1] : parts[0];
-  
-      const imageBuffer = Buffer.from(imageData, 'base64');
-
-      return NextResponse.json({ imageBuffer }, { status: 200 })
+      const base64Images = images.data.map(image => `data:image/png;base64,${image.b64_json}`);
+      return NextResponse.json({ images: base64Images }, { status: 200 });
     } else if (type === "tag") {
       const completion: any = await openai.chat.completions.create({
         model: "gpt-4o",
@@ -67,17 +45,17 @@ export async function POST(
             "parameters": {
               "type": "object",
               "properties": {
-                  "tags": {
-                      "type": "array",
-                      "description": "A category defines a broad aspect of a character’s personality, such as virtue or flaw, while a tag specifies an example within that category, like honesty for virtue or impulsiveness for flaw.",
-                      "items": {
-                        "type": "string"
-                      }
+                "tags": {
+                  "type": "array",
+                  "description": "A category defines a broad aspect of a character’s personality, such as virtue or flaw, while a tag specifies an example within that category, like honesty for virtue or impulsiveness for flaw.",
+                  "items": {
+                    "type": "string"
                   }
+                }
               },
               "required": ["tags"]
             }
-            }
+          }
         ],
         function_call: "auto",
       })
@@ -103,11 +81,23 @@ export async function POST(
       });
       const result = completion.choices[0].message.content.trim();
       return NextResponse.json({ completion: result }, { status: 200 })
+    } else if (type === "prompt") {
+      const completion: any = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        // stream: true,
+        max_tokens: 300,
+        messages: [
+          { role: "system", content: "Create a portrait image generation prompt that fits the specified style and persona. If no specifics are given, use a Realistic style and a handsome character. Each image should feature a single person's portrait. Default language is English. Provide only the rewritten text as your output, without any quotes or tags." },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+      });
+
+      const result = completion.choices[0].message.content.trim();
+      return NextResponse.json({ completion: result }, { status: 200 })
     }
-
-    
-
-    
   } catch (error) {
     console.log(error)
     return new NextResponse("Internal Error", { status: 500 });

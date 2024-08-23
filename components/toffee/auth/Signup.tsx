@@ -124,8 +124,8 @@ export default function Signup({ isAuth }: { isAuth: boolean }) {
             src="/toffee.svg"
             className="inline"
           />
-          <h1 className="font-inter text-white text-xl font-semibold leading-7 mt-10">Sign Up</h1>
-          <span className="font-inter text-[13px] text-text-tertiary mt-2">Welcome to work full of different characters</span>
+          <h1 className=" text-white text-xl font-semibold leading-7 mt-10">Sign Up</h1>
+          <span className=" text-[13px] text-text-tertiary mt-2">Welcome to work full of different characters</span>
         </div>
         <div className="px-10 flex flex-col gap-6 pb-10">
           <div className="bg-white cursor-pointer rounded-full px-4 py-1.5 w-full flex flex-row justify-center gap-1 items-center" onClick={handleGoogleAuth}>
@@ -135,7 +135,7 @@ export default function Signup({ isAuth }: { isAuth: boolean }) {
               <path d="M12.1838 6.58365C13.5364 6.58365 14.7386 7.04183 15.6987 7.92548L18.3286 5.34823C16.7339 3.89188 14.6635 3 12.1838 3C8.59387 3 5.49649 5.02092 3.98535 7.9664L7.04099 10.2901C7.76729 8.16274 9.79609 6.58365 12.1838 6.58365Z" fill="#EA4335" />
               <path d="M7.03703 13.7131L6.36481 14.2174L3.98535 16.0338C5.49649 18.971 8.59368 21.0002 12.1837 21.0002C14.6632 21.0002 16.742 20.1983 18.2616 18.8238L15.281 16.5574C14.4628 17.0974 13.4192 17.4247 12.1837 17.4247C9.7959 17.4247 7.76719 15.8456 7.04079 13.7183L7.03703 13.7131Z" fill="#34A853" />
             </svg>
-            <span className="text-black font-medium text-center font-inter text-sm p-1">Sign up with Google</span>
+            <span className="text-black font-medium text-center  text-sm p-1">Sign up with Google</span>
           </div>
           <div className="flex flex-row w-full gap-[13px] items-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="186" height="2" viewBox="0 0 186 2" fill="none">
@@ -147,7 +147,7 @@ export default function Signup({ isAuth }: { isAuth: boolean }) {
                 </linearGradient>
               </defs>
             </svg>
-            <span className="text-text-tertiary text-[13px] font-inter">OR</span>
+            <span className="text-text-tertiary text-[13px] ">OR</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="186" height="2" viewBox="0 0 186 2" fill="none">
               <path d="M186 1H-4.35114e-06" stroke="url(#paint0_linear_1580_2251)" strokeOpacity="0.1" />
               <defs>
@@ -160,37 +160,37 @@ export default function Signup({ isAuth }: { isAuth: boolean }) {
           </div>
           <form className="flex flex-col" onSubmit={handleSignup}>
             <div className="flex flex-col gap-1">
-              <label htmlFor="email" className="text-xs font-inter text-text-tertiary">Email</label>
+              <label htmlFor="email" className="text-xs  text-text-tertiary">Email</label>
               <input type="text" name="email" placeholder="Enter your email" className={`px-4 py-3 rounded-md border bg-transparent text-[13px] focus:outline-none text-white autofill:bg-transparent ${errorForEmail ? "border-[#DF1C41]" : "border-white/10"}`} onChange={(e) => setEmail(e.target.value)} />
               {errorForEmail && (
-                <span className="text-[#DF1C41] font-inter text-xs">{errorForEmail}</span>
+                <span className="text-[#DF1C41]  text-xs">{errorForEmail}</span>
               )}
             </div>
             <div className="flex flex-col gap-1 mt-6">
-              <label htmlFor="password" className="text-xs font-inter text-text-tertiary">Password</label>
+              <label htmlFor="password" className="text-xs  text-text-tertiary">Password</label>
               <input type="password" name="password" placeholder="Enter your password" className={`px-4 py-3 rounded-md border bg-transparent text-[13px] focus:outline-none text-white ${errorForPassword ? "border-[#DF1C41]" : "border-white/10"}`} onChange={(e) => setPassword(e.target.value)} />
               {errorForPassword && (
-                <span className="text-[#DF1C41] font-inter text-xs">{errorForPassword}</span>
+                <span className="text-[#DF1C41]  text-xs">{errorForPassword}</span>
               )}
             </div>
             <div className="flex flex-col gap-1 mt-6">
-              <label htmlFor="confirmPassword" className="text-xs font-inter text-text-tertiary">Confirm Password</label>
+              <label htmlFor="confirmPassword" className="text-xs  text-text-tertiary">Confirm Password</label>
               <input type="password" name="confirmPassword" placeholder="Confirm your password" className={`px-4 py-3 rounded-md border bg-transparent text-[13px] focus:outline-none text-white ${errorForConfirmPassword ? "border-[#DF1C41]" : "border-white/10"}`} onChange={(e) => setConfirmPassword(e.target.value)} />
               {errorForConfirmPassword && (
-                <span className="text-[#DF1C41] font-inter text-xs">{errorForConfirmPassword}</span>
+                <span className="text-[#DF1C41]  text-xs">{errorForConfirmPassword}</span>
               )}
             </div>
             <div className="flex flex-col gap-1 mt-6">
-              <label htmlFor="name" className="text-xs font-inter text-text-tertiary">Nickname</label>
+              <label htmlFor="name" className="text-xs  text-text-tertiary">Nickname</label>
               <input type="text" name="name" placeholder="Enter your another name" className={`px-4 py-3 rounded-md border bg-transparent text-[13px] focus:outline-none text-white ${errorForname ? "border-[#DF1C41]" : "border-white/10"}`} onChange={(e) => setname(e.target.value)} />
               {errorForname && (
-                <span className="text-[#DF1C41] font-inter text-xs">{errorForname}</span>
+                <span className="text-[#DF1C41]  text-xs">{errorForname}</span>
               )}
             </div>
             <button className="mt-6 bg-gradient-to-r from-[#C28851] to-[#B77536] text-white font-bold text-center cursor-pointer rounded-full px-4 py-2 w-full">
               Sign Up
             </button>
-            <Link href="/login" className="text-text-tertiary font-inter text-xs cursor-pointer mt-6">{"Do you have an account?  "} <span className="mt-2 text-[#BC7F44] font-inter text-xs font-medium cursor-pointer">Login</span></Link>
+            <Link href="/login" className="text-text-tertiary  text-xs cursor-pointer mt-6">{"Do you have an account?  "} <span className="mt-2 text-[#BC7F44]  text-xs font-medium cursor-pointer">Login</span></Link>
           </form>
         </div>
       </div>

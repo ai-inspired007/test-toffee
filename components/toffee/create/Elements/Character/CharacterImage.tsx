@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import Image from "next/image";
 import { Trash2 } from 'lucide-react';
-import { RiImageAddLine } from "../../icons/AddImageLine";
+import { RiImageAddLine } from "../../../icons/AddImageLine";
 import { validImageInputTypes } from "@/lib/upload/util";
 interface ImageUploadProps {
   value: string | null;
@@ -34,7 +34,7 @@ const CharacterImage = ({
   };
   return (
     <div
-      className="h-[236px] w-[204px] rounded-lg"
+      className="w-[242px] h-[280px] rounded-2xl"
     >
       {value ? (
         <div className="relative w-full" 
@@ -48,13 +48,13 @@ const CharacterImage = ({
           <Image
             src={value}
             alt="Background"
-            className="h-[236px] w-[204px] rounded-lg object-cover"
+            className="w-[242px] h-[280px] rounded-2xl object-cover"
             width={0}
             height={0}
             sizes="100vw"
           />
           <div
-            className="absolute top-2 right-2 bg-bg-3 text-icon-3 p-2 rounded-lg cursor-pointer"
+            className="absolute top-2 right-2 bg-bg-3 text-icon-3 p-2 rounded-2xl cursor-pointer"
             onClick={() => { onChange(null); setFile(null); }}>
             <Trash2 className="h-6 w-6" />
           </div>
@@ -62,7 +62,7 @@ const CharacterImage = ({
       ) : (
         <label
           htmlFor="file-input"
-          className="flex h-[236px] w-[204px] cursor-pointer flex-col items-center justify-center rounded-lg border border-white/10 bg-[#121212] relative"
+          className="flex w-[242px] h-[280px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-white/10 bg-[#121212] relative"
         >
           <div className="flex flex-col items-center justify-center pb-6 pt-5">
             <RiImageAddLine className="text-icon-3 w-6 h-6 mb-4" />

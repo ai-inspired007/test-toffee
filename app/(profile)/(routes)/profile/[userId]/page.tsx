@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import ProfilePage from "@/components/toffee/profile";
-import { Character, Follow, KnowledgePack } from "@prisma/client";
+import { Character, Follow, KnowledgePack, UserSettings } from "@prisma/client";
 import { auth, signIn } from "auth";
 import prismadb from "@/lib/prismadb";
 
@@ -24,9 +24,12 @@ const Profile = async ({ params }: ProfilePageProps) => {
     },
     select: {
       name: true,
-      // follower: true,
-      // following: true,
+      email: true,
       profile_image: true,
+      banner_image: true,
+      shared: true,
+      language: true,
+      password: true,
       // chat_background_image: true,
       linkedin: true,
       telegram: true,
@@ -87,13 +90,8 @@ const Profile = async ({ params }: ProfilePageProps) => {
   })
 
   const data: {
-    name: string | null | undefined;
     type: string;
-    image: string | null | undefined;
-    linkedin: string | null | undefined;
-    telegram: string | null | undefined;
-    instagram: string | null | undefined;
-    twitter: string | null | undefined;
+    user: Partial<UserSettings | null>;
     characters: Partial<Character & { _count: { messages: number } }>[];
     candies: Partial<KnowledgePack>[];
     userFollowings: Partial<Follow>[];
@@ -102,13 +100,8 @@ const Profile = async ({ params }: ProfilePageProps) => {
     currentFollowers: Partial<Follow>[];
     currentFollowings: Partial<Follow>[];
   } = {
-    name: user?.name,
     type: params.userId === userId ? "personal" : "user",
-    image: user?.profile_image,
-    linkedin: user?.linkedin,
-    telegram: user?.telegram,
-    instagram: user?.instagram,
-    twitter: user?.twitter,
+    user: user,
     characters: user?.characters || [],
     candies: knowledgePacks,
     userFollowings: userFollowings,

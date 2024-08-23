@@ -28,7 +28,7 @@ const Modal: React.FC<IProps> = ({ children, isOpen, onClose, className }) => {
   return (
     isOpen && (
       <div 
-         className={`fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black/50 backdrop-blur-[10px] z-50`}
+        className={`fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black/50 backdrop-blur-[10px] z-50`}
       >
         <div 
           ref={ref} 

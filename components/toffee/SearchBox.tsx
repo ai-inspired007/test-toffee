@@ -75,7 +75,7 @@ export const SearchBox = ({query, setQuery, autocompleteItems, except}: SearchBo
     return "";
   };
   return (
-    <label className="sticky top-0 z-50 w-full rounded-t-lg bg-opacity-60 py-5 text-gray-400 backdrop-blur-lg backdrop-filter focus-within:text-gray-600 flex items-center border-0 border-b-2 border-[#BC7F44] font-inter">
+    <label className="sticky top-0 z-50 w-full rounded-t-lg bg-opacity-60 py-5 text-gray-400 backdrop-blur-lg backdrop-filter focus-within:text-gray-600 flex items-center border-0 border-b-2 border-[#BC7F44] ">
       <SearchLineIcon className="h-6 w-6 pointer-events-none absolute left-6 text-[#B1B1B1]" />
       <input
         placeholder="What are you looking for?"
@@ -89,7 +89,7 @@ export const SearchBox = ({query, setQuery, autocompleteItems, except}: SearchBo
       />
       {autocompleteVisible && query && (
         <div className="absolute flex items-center pointer-events-none pl-14 py-5 top-0 z-0">
-          <span className="text-muted-foreground text-sm h-9 items-center flex font-inter">
+          <span className="text-muted-foreground text-sm h-9 items-center flex ">
             {query}{getPlaceholderText().slice(query.length)}
           </span>
         </div>

@@ -38,9 +38,9 @@ const DiscoverPage = ({ data }: {
   const selectedButton = () => {
     if (data.isPersonal) {
       return (
-        <div className="flex flex-row items-center py-1.5 px-4 gap-2 text-text-sub bg-bg-3 rounded-full w-24 h-9 justify-center">
+        <div className="flex flex-row items-center py-1.5 px-4 gap-2 text-text-sub bg-bg-3 rounded-full w-24 h-9 justify-center cursor-pointer" onClick={() => setIsEdit(true)}>
           <Edit3Icon className="h-4 w-4" />
-          <button className="text-sm py-1 font-medium" onClick={() => setIsEdit(true)}>Edit</button>
+          <button className="text-sm py-1 font-medium">Edit</button>
         </div>
       )
     } else {

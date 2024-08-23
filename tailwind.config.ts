@@ -1,4 +1,4 @@
-import type { Config } from 'tailwindcss';
+import type { Config } from "tailwindcss";
 
 // Define the configuration for TailwindCSS
 const config: Config = {
@@ -19,6 +19,23 @@ const config: Config = {
     },
     extend: {
       colors: {
+        toffee: {
+          "bg-2": "#121212",
+          "bg-3": "#202020",
+          "bg-additional": "#242424",
+          "mine-sharp": "#323232",
+          "icon-3": "#B1B1B1",
+          "icon-additional": "#939393",
+          text: {
+            additional: "#B1B1B1",
+            sub: "#DDDDDD",
+            card: "#DEDFE4",
+            accent: "#BC7F44",
+            tertiary: "#777777",
+            silver: "#B3B3B3",
+            gray: "#727272",
+          },
+        },
         "bg-1": "#000000",
         "bg-2": "#121212",
         "bg-3": "#202020",
@@ -61,6 +78,9 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      lineHeight: {
+        4.5: "18px",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -75,22 +95,32 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "spin-2": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "spin-2": "spin 2s linear infinite",
       },
       fontFamily: {
-        inter: ['Inter', 'sans-serif'],
-        hellix: ['Hellix', 'sans-serif']
+        sans: ["Inter", "sans-serif"],
+        inter: ["Inter", "sans-serif"],
+        hellix: ["Hellix", "sans-serif"],
       },
       backgroundImage: {
         chat: "url('/chat_background.svg')",
+        "linear-yellow":
+          "linear-gradient(112deg, #C28851 3.31%, #B77536 83.85%)",
         "chat-white": "url('/chat_background_white.svg')",
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-      }
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic":
+          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        "toffe-gradient":
+          "linear-gradient(275deg, #FDCE48 1.02%, #EFA732 24.62%, #E69B33 77.15%)",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

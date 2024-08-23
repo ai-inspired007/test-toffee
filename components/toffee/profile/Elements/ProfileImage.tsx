@@ -6,7 +6,7 @@ import { GCPBucketNames, UploadToGCSInput } from "@/app/api/upload/_schema";
 import { uploadCharacterPic, validImageInputTypes } from "@/lib/upload/util";
 interface ImageUploadProps {
   value: string | null | undefined;
-  setValue: (src: string | null) => void;
+  setValue: Dispatch<SetStateAction<string | null>>;
   setFile: Dispatch<SetStateAction<File | null>>;
 }
 const CharacterImage = ({
@@ -21,7 +21,7 @@ const CharacterImage = ({
       {value ? (
         <div className="relative w-full">
           <Image
-            src={value}
+            src={value || "/you.png"}
             alt="Background"
             className="h-[236px] w-[204px] rounded-lg object-cover"
             width={0}

@@ -1,8 +1,7 @@
-import prismadb from "@/lib/prismadb";
 import { auth } from "auth";
 import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
-import { MemoryManager, writeFile, deleteFile } from "@/lib/memory/memory";
+import { writeFile } from "@/lib/memory/memory";
 import { isEmpty } from "lodash";
 
 export const maxDuration = 60;

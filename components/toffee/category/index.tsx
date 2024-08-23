@@ -5,7 +5,8 @@ import { Character as BaseCharacterProps, Category as BaseCategory, Tag } from "
 import CharacterCard from "@/components/toffee/CharacterCard";
 import TagCarousel from "../CarouselWithTag";
 import Image from "next/image";
-
+import { useMediaQuery } from "react-responsive";
+import MobileNavPanel from "../MobileNav";
 interface Character extends BaseCharacterProps {
   _count: {
     messages: number;
@@ -19,6 +20,7 @@ interface Category extends BaseCategory {
 }
 
 export function CategoryPage({ data }: { data: Category | null }) {
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
   const [characters, setCharacters] = useState<Character[]>(data?.characters || []);
   const [filteredCharacters, setFilteredCharacters] = useState<Character[]>(data?.characters || []);
   const [loading, setLoading] = useState(!data); // If data is given, set loading to false
@@ -90,17 +92,17 @@ export function CategoryPage({ data }: { data: Category | null }) {
     });
   });
   return (
-    <div className="h-screen w-full p-2 overflow-y-auto no-scrollbar">
-      <div className="flex flex-col items-center justify-start rounded-2xl bg-[#121212] min-h-full w-full overflow-auto">
-        <div className="w-full rounded-t-2xl h-[228px] bg-gradient-to-b from-[#6E3FF3] to-[#6E3FF380] flex flex-row items-center px-6 gap-8 relative">
+    <div className="h-screen w-full sm:p-2 overflow-y-auto no-scrollbar mb-20 sm:mb-0">
+      <div className="flex flex-col items-center justify-start sm:rounded-2xl bg-[#121212] min-h-full w-full overflow-auto">
+        <div className="w-full sm:rounded-t-2xl sm:h-[228px] bg-gradient-to-b from-[#6E3FF3] to-[#6E3FF380] flex flex-col sm:flex-row items-center px-6 gap-8 relative py-8">
           <div className="flex flex-row items-center z-10">
             <Image src={"/characters/yor.png"} width={0} height={0} sizes="100vw" alt="Yor" className="w-[113px] aspect-square rounded-2xl object-cover -mr-[60px]" />
             <Image src={"/characters/zero.png"} width={0} height={0} sizes="100vw" alt="Zero" className="w-[148px] aspect-square rounded-2xl object-cover z-10" />
             <Image src={"/characters/rias.png"} width={0} height={0} sizes="100vw" alt="Rias" className="w-[113px] aspect-square rounded-2xl object-cover -ml-[60px]" />
           </div>
-          <div className="flex flex-col gap-0.5 z-10">
-            <h1 className="text-white font-inter text-[40px] font-[550]">{data?.name}</h1>
-            <div className="flex flex-row text-text-additional font-light font-inter text-sm items-center gap-3">
+          <div className="flex flex-col gap-0.5 z-10 items-center sm:items-start">
+            <h1 className="text-white  text-[24px] sm:text-[40px] font-[550]">{data?.name}</h1>
+            <div className="flex flex-row text-text-additional font-light  text-sm items-center gap-3">
               <span>{data?.characters.length} Characters</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4" fill="none">
                 <circle cx="2" cy="2" r="2" fill="#B1B1B1" />
@@ -113,7 +115,7 @@ export function CategoryPage({ data }: { data: Category | null }) {
           </div>
         </div>
         <div className="w-full h-[180px] bg-gradient-to-b from-[#6E3FF34D] to-[#40258D00]">
-          <label className="sticky top-0 z-50 w-full rounded-t-lg bg-opacity-60 py-3 text-gray-400 backdrop-blur-lg backdrop-filter focus-within:text-gray-600 flex items-center border-b border-white/10 font-inter">
+          <label className="sticky top-0 z-50 w-full rounded-t-lg bg-opacity-60 py-3 text-gray-400 backdrop-blur-lg backdrop-filter focus-within:text-gray-600 flex items-center border-b border-white/10 ">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="pointer-events-none absolute left-6" xmlns="http://www.w3.org/2000/svg">
               <path d="M17.4279 16.1553L21.2826 20.0091L20.0091 21.2826L16.1553 17.4279C14.7214 18.5774 12.9378 19.2026 11.1 19.2C6.6288 19.2 3 15.5712 3 11.1C3 6.6288 6.6288 3 11.1 3C15.5712 3 19.2 6.6288 19.2 11.1C19.2026 12.9378 18.5774 14.7214 17.4279 16.1553ZM15.6225 15.4875C16.7647 14.3129 17.4026 12.7384 17.4 11.1C17.4 7.6188 14.5803 4.8 11.1 4.8C7.6188 4.8 4.8 7.6188 4.8 11.1C4.8 14.5803 7.6188 17.4 11.1 17.4C12.7384 17.4026 14.3129 16.7647 15.4875 15.6225L15.6225 15.4875Z" fill="#B1B1B1" />
             </svg>
@@ -179,6 +181,7 @@ export function CategoryPage({ data }: { data: Category | null }) {
           ) : null
         }
       </div>
+      {isMobile && <MobileNavPanel />}
     </div>
   );
 }

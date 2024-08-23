@@ -1,213 +1,239 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { X } from 'lucide-react';
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { Category, KnowledgePack, Tag } from "@prisma/client";
+import { toast } from "react-toastify";
+import { Category, Tag } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { AddCharacterImage } from "./Elements/AddCharacterImage";
-import { CharacterInformation } from "./Elements/CharacterInformation";
-import { CharacterConfig } from "./Elements/CharacterConfig";
-import { CharacterAddons } from "./Elements/CharacterAddons";
-import axios from "axios";
-
-type SlideDirection = "backwards" | "forwards";
+import { AddCharacterImage } from "./Elements/Character/AddCharacterImage";
+import CharacterInformation from "./Elements/Character/CharacterInformation";
+import CharacterConversation, { Conversation } from "./Elements/Character/CharacterConv";
+import { CharacterAddons } from "./Elements/Character/CharacterAddons";
+import SelectGender from "./Elements/Character/SelectGender";
+import SelectImageType from "./Elements/Character/ImageType";
+import { TKnowledgePack } from "@/lib/types";
+type GenderType = "Male" | "Female" | "Non-Binary" | "Prefer Not To Answer";
+type ImageType = "upload" | "generate" | null;
 
 const CharacterCreate = ({
   categorielist,
   addons
 }: {
   categorielist: { id: string, name: string, tags: Tag[] }[];
-  addons: KnowledgePack[];
+  addons: TKnowledgePack[];
 }) => {
-  const steps = ["Image", "General", "Configuration", "Knowledge"];
-  const [step, setSlideNumber] = useState(0);
+  const steps = ["Image", "General", "Respond", "Knowledge"];
+  const [step, setSlideNumber] = useState(-2);
+  const [gender, setGender] = useState<GenderType | null>(null);
+  const [imageType, setImageType] = useState<ImageType>(null);
   const [imagePrompt, setImagePrompt] = useState("");
   const [imageData, setImageData] = useState<string | null>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [categoryId, setCategoryId] = useState<Category["id"]>(categorielist[0].id);
-  const [characterTags, setCharacterTags] = useState<string[]>([]);
-  const [greeting, setGreeting] = useState("");
+  const [categoryId, setCategoryId] = useState<Category["id"] | undefined>(categorielist[0]?.id || undefined);
+  const [introduction, setIntroduction] = useState("");
   const [instructions, setInstructions] = useState("");
-  const [seed, setSeed] = useState("");
+  const [scenario, setScenario] = useState("");
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
-  const [connectedCandies, setConnectedCandies] = useState<KnowledgePack[]>([]);
   const [errors, setErrors] = useState<any>({});
   const router = useRouter();
-  const slideDirectionRef = useRef<SlideDirection>("forwards");
   const [categories, setCategories] = useState(categorielist);
-  const [addedCategory, setAddedCategory] = useState<{ id: string, name: string, tags: Tag[] } | null>(null); 
+  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
+  const [categoryTags, setCategoryTags] = useState<Set<string>>(new Set());
+  const [selectedAddons, setSelectedAddons] = useState<TKnowledgePack[]>([]);
+  const [conversation, setConversation] = useState<Conversation[]>([
+    { title: "Conversation", content: [{ question: "", answer: "" }] },
+  ]);
 
   useEffect(() => {
-    console.log(imageFile)
-    console.log(imageData)
-  }, [imageFile, imageData]);
-  const validateStep = (currentStep: number) => {  
-    let newErrors: Record<string, string> = {};  
-  
-    switch (currentStep) {  
-      case 0:  
-        if (!imageData) newErrors.imageData = "Image is required.";  
-        break;  
-      case 1:  
-        if (!name) newErrors.name = "Name is required.";  
-        if (!description) newErrors.description = "Description is required.";  
-        if (!categoryId) newErrors.categoryId = "Category is required.";  
-        break;  
-      case 2:  
-        if (!greeting) newErrors.greeting = "Greeting is required.";  
-        if (!instructions) newErrors.instructions = "Instructions are required.";  
-        if (!seed) newErrors.seed = "Seed is required.";  
-        break;  
-      default:  
-        return true;  
-    }  
-  
-    if (Object.keys(newErrors).length > 0) {  
-      Object.values(newErrors).forEach((error) => {  
-        toast.error(error as string, {  
-          theme: "colored",  
-          hideProgressBar: true,  
-          autoClose: 1500,  
-        });  
-      });  
-      setErrors(newErrors);  
-      return false;  
-    }  
-  
-    setErrors({});  
-    return true;  
-  };  
+    if (categoryId) {
+      const category = categorielist.find((cat) => cat.id === categoryId);
+      setCategoryTags(new Set(category?.tags.map(tag => tag.name)));
+    }
+  }, [categoryId, categorielist]);
 
-  const advanceStep = () => {  
-    if (validateStep(step)) {  
-      slideDirectionRef.current = "forwards";  
-      setSlideNumber(step + 1);  
-    }  
-  };  
+  const validateStep = (currentStep: number) => {
+    let newErrors: Record<string, string> = {};
+
+    switch (currentStep) {
+      case 0:
+        if (!imageData) newErrors.imageData = "Image is required.";
+        break;
+      case 1:
+        // Add validation if needed  
+        break;
+      case 2:
+        // Add validation if needed  
+        break;
+      default:
+        return true;
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      Object.values(newErrors).forEach((error) => {
+        toast.error(error as string, {
+          theme: "colored",
+          hideProgressBar: true,
+          autoClose: 1500,
+        });
+      });
+      setErrors(newErrors);
+      return false;
+    }
+
+    setErrors({});
+    return true;
+  };
+
+  const advanceStep = () => {
+    if (validateStep(step)) {
+      setSlideNumber(step + 1);
+    }
+  };
+
+  const handleStepClick = (index: number) => {
+    if (index < step || validateStep(step)) {
+      setSlideNumber(index);
+    }
+  };
+
   async function createCharacter() {
     const formData = new FormData();
-    if (imageFile)
-      formData.append("imgFile", imageFile);
+    if (imageFile) formData.append("imgFile", imageFile);
+    const conversationString = JSON.stringify(conversation);
     let mainData = {
       name,
       description,
+      greeting: introduction,
       instructions,
-      seed,
-      categoryId: addedCategory ? "" : categoryId,
-      addedCategory,
-      greeting,
-      tags: Array.from(characterTags),
-      addons: Array.from(connectedCandies.map((item)=>item.id))
-    }
+      seed: conversationString,
+      categoryId: categoryId,
+      tags: Array.from(selectedTags),
+      addons: Array.from(selectedAddons.map((item) => item.id)),
+    };
     formData.append("data", JSON.stringify(mainData));
     const response = await fetch("/api/character", {
       method: "POST",
-      body: formData
+      body: formData,
     });
     if (response.ok) {
-      // alert("Character created successfully!");
       router.refresh();
       router.push(`/models`);
-      
     } else {
-      // alert("Failed to create character.");
-      console.error(response.status, response.statusText);
-      toast.error("Something went wrong. Your character has been flagged by the moderation system. If you believe this isn't the case, and the error persists, contact a developer.", {  
-        theme: "colored",  
-        hideProgressBar: true,  
-        autoClose: 1500,  
-      })
+      toast.error("Something went wrong. Please try again.", {
+        theme: "colored",
+        hideProgressBar: true,
+        autoClose: 1500,
+      });
     }
   }
 
   return (
-    <div className="h-screen w-full p-2 overflow-y-auto no-scrollbar">
-      <ToastContainer />
-      <div className="flex flex-col rounded-2xl bg-bg-2 w-full min-h-full items-center justify-start relative p-6">
-        <X className="text-icon-3 bg-bg-3 rounded-full p-1.5 h-9 w-9 cursor-pointer absolute top-6 right-6" />
-        <div className="w-full flex justify-center items-center">
-          <div className="flex flex-row rounded-full bg-black p-0.5 text-white gap-0.5">
-            {steps.map((item, index) =>
-              <div key={index} className={`flex flex-row items-center ${index === step && "bg-[#BC7F44] rounded-full p-0.5"}`}>
-                <div className={index < step ? "bg-bg-3 rounded-full w-7 h-7 flex items-center justify-center" : "w-6 h-6 flex items-center justify-center bg-black rounded-full"}>{index + 1}</div>
-                {index === step && <div className="text-xs px-2">{item}</div>}
-              </div>
-            )}
+    <div className="h-screen w-full sm:p-2 overflow-y-auto no-scrollbar">
+      <div className="flex flex-col sm:rounded-2xl bg-bg-2 w-full min-h-full overflow-auto items-center justify-start relative sm:p-6 p-5">
+        <X className="text-icon-3 bg-bg-3 rounded-full sm:p-1.5 p-1 sm:h-9 sm:w-9 w-6 h-6 cursor-pointer absolute sm:top-6 sm:right-6 top-5 right-5" />        
+        {step > -1 && (
+          <div className="w-full flex sm:justify-center sm:items-center">
+            <div className="flex flex-row rounded-full bg-black p-0.5 text-white gap-0.5">
+              {steps.map((item, index) => (
+                <div
+                  key={index}
+                  onClick={() => handleStepClick(index)}
+                  className={`flex flex-row items-center cursor-pointer ${index === step && "bg-[#BC7F44] rounded-full p-0.5"}`}
+                >
+                  <div className={index < step ? "bg-bg-3 rounded-full w-7 h-7 flex items-center justify-center" : "w-6 h-6 flex items-center justify-center bg-black rounded-full"}>{index + 1}</div>
+                  {index === step && <div className="text-xs px-2">{item}</div>}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="no-scrollbar flex h-full w-full flex-col gap-6 overflow-x-visible items-center">
-          {step === 0 &&
-            <AddCharacterImage
-              imageData={imageData}
-              setImageData={setImageData}
-              imagePrompt={imagePrompt}
-              setImagePrompt={setImagePrompt}
-              setImageFile={setImageFile}
-              advanceFunction={advanceStep}
-              previousFunction={() => router.push("/create")}
-            />
-          }
-          {step === 1 && (
-            <CharacterInformation
-              advanceFunction={advanceStep}
-              previousFunction={() => {
-                slideDirectionRef.current = "backwards";
-                setSlideNumber(0);
-              }}
-              imageData={imageData}
-              categories={categories}
-              setCategories={setCategories}
-              categoryId={categoryId}
-              description={description}
-              name={name}
-              addedCategory={addedCategory}
-              setAddedCategory={setAddedCategory}
-              characterTags={characterTags}
-              setCharacterTags={setCharacterTags}
-              setCategoryId={setCategoryId}
-              setDescription={setDescription}
-              setName={setName}
-            />
-          )}
-          {step === 2 && (
-            <CharacterConfig
-              imageData={imageData}
-              description={description}
-              name={name}
-              greeting={greeting}
-              setGreeting={setGreeting}
-              instructions={instructions}
-              setInstructions={setInstructions}
-              seed={seed}
-              setSeed={setSeed}
-              advanceFunction={advanceStep}
-              previousFunction={() => {
-                slideDirectionRef.current = "backwards";
-                setSlideNumber(1);
-              }}
-            />
-          )}
-          {step === 3 && (
-            <CharacterAddons
-              isSubmitLoading={isSubmitLoading}
-              advanceFunction={() => {
-                setIsSubmitLoading(true);  
-                createCharacter();  
-                setIsSubmitLoading(false);
-              }}
-              previousFunction={() => setSlideNumber(2)}
-              description={description}
-              imageData={imageData}
-              name={name}
-              connectedCandies={connectedCandies}
-              setConnectedCandies={setConnectedCandies}
-              addons={addons}
-            />
-          )}
-        </div>
+        )}
+        {step === -2 && (
+          <SelectGender
+            gender={gender}
+            setGender={setGender}
+            advanceFunction={() => {
+              if (gender) setSlideNumber(-1);
+            }}
+            previousFunction={() => router.push("/create")}
+          />
+        )}
+        {step === -1 && (
+          <SelectImageType
+            imageType={imageType}
+            setImageType={setImageType}
+            advanceFunction={() => {
+              if (imageType) setSlideNumber(0);
+            }}
+            previousFunction={() => setSlideNumber(-2)}
+          />
+        )}
+        {step === 0 && (
+          <AddCharacterImage
+            imageData={imageData}
+            imageType={imageType}
+            setImageType={setImageType}
+            setImageData={setImageData}
+            imagePrompt={imagePrompt}
+            setImagePrompt={setImagePrompt}
+            setImageFile={setImageFile}
+            advanceFunction={advanceStep}
+            previousFunction={() => setSlideNumber(-1)}
+          />
+        )}
+        {step === 1 && (
+          <CharacterInformation
+            advanceFunction={advanceStep}
+            previousFunction={() => setSlideNumber(0)}
+            imageData={imageData}
+            categories={categories}
+            setCategories={setCategories}
+            categoryId={categoryId}
+            description={description}
+            name={name}
+            setName={setName}
+            selectedTags={selectedTags}
+            setSelectedTags={(tags) => setSelectedTags(new Set(tags))}
+            setCategoryId={setCategoryId}
+            setDescription={setDescription}
+            instructions={instructions}
+            setInstructions={setInstructions}
+            introduction={introduction}
+            setIntroduction={setIntroduction}
+            scenario={scenario}
+            setScenario={setScenario}
+          />
+        )}
+        {step === 2 && (
+          <CharacterConversation
+            imageData={imageData}
+            description={description}
+            name={name}
+            setName={setName}
+            conversation={conversation}
+            setConversation={setConversation}
+            advanceFunction={advanceStep}
+            previousFunction={() => setSlideNumber(1)}
+          />
+        )}
+        {step === 3 && (
+          <CharacterAddons
+            isSubmitLoading={isSubmitLoading}
+            advanceFunction={() => {
+              setIsSubmitLoading(true);
+              createCharacter();
+              setIsSubmitLoading(false);
+            }}
+            previousFunction={() => setSlideNumber(2)}
+            description={description}
+            imageData={imageData}
+            name={name}
+            addons={addons}
+            selectedAddons={selectedAddons}
+            setSelectedAddons={setSelectedAddons}
+            categoryTags={Array.from(categoryTags)}
+          />
+        )}
       </div>
     </div>
   );

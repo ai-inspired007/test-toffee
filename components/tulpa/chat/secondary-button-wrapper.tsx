@@ -9,7 +9,7 @@ export function SecondaryButtonWrapper({
   return (
     <button
       {...buttonProps}
-      className={`bg-bg-3 w-full rounded-3xl px-3 py-2 ${buttonProps.className ?? ""}`}
+      className={`bg-bg-3 w-full rounded-3xl px-3 py-1 ${buttonProps.className ?? ""}`}
     >
       {children}
     </button>

@@ -9,7 +9,7 @@ export const UserAvatar = ({ size }: UserAvatarProps) => {
   const user = session?.user;
   return (
     <Avatar className={size ? cn(`h-${size} w-${size}`) : "h-8 w-8"}>
-      <AvatarImage className="object-cover" src={user?.image ?? "https://source.boringavatars.com/marble/120"} />
+      <AvatarImage className="object-cover" src={user?.image ?? "/profile/default_user.png"} />
     </Avatar>
   );
 };

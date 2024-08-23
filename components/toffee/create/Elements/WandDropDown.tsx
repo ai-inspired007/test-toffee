@@ -8,34 +8,23 @@ export const WandDropDown = ({
   input,
   setInput,
   isImage,
-  setImageData,
-  setImageFile,
   isTextarea
 }: {
     input: string;
     setInput: (prompt: string) => void;
     isImage: boolean;
-    setImageData: (image: string | null) => void;
-    setImageFile?: Dispatch<SetStateAction<File | null>>;
     isTextarea: boolean;
   }) => {
   const [loading, setLoading] = useState(false);
-  const onGenerateImage = async () => { 
-    if (isImage) {
-      setLoading(true);
-      await axios.post("/api/character/generate/ai", { prompt: input, type: "image" })
-        .then(res => {
-          setLoading(false);
-          const uintArray = new Uint8Array(res.data.imageBuffer.data);
-          const blob = new Blob([uintArray], { type: 'image/png' });
-
-          const imageUrl = URL.createObjectURL(blob);
-          setImageData(imageUrl)
-          setImageFile?.(new File([blob], "ai-image.png", { type: 'image/png' }));
-        });
-    }
+  
+  const onGeneratePrompt = async () => {
+    setLoading(true);
+    await axios.post("/api/character/generate/ai", { prompt: input, type: "prompt" })
+      .then(res => {
+        setLoading(false);
+        setInput(res.data.completion);
+      });
   }
-
   const onMakeShorter = async () => {
     setLoading(true);
     await axios.post("/api/character/generate/ai", { prompt: input, type: "short" })
@@ -95,14 +84,14 @@ export const WandDropDown = ({
       <DropdownMenu.Trigger>
         {
           !loading ? (
-            <Wand2 className="flex absolute top-2 right-2 text-white focus: shadow-2xl hover:shadow-xl" />
+            <Wand2 className="flex absolute top-2 right-2 text-icon-3 focus: shadow-2xl hover:shadow-xl w-5 h-5" />
           ) : (
             <Image
               className="flex absolute top-2 right-2"
               src={"/loading.svg"}
               alt="loading_svg"
-              width={30}
-              height={30}
+              width={24}
+              height={24}
               />
             )
         }
@@ -113,7 +102,7 @@ export const WandDropDown = ({
             isImage && (
               <DropdownMenu.Item
                 className="flex w-full cursor-pointer select-none flex-row items-center gap-2 px-3 pb-1 pt-2 outline-none data-[highlighted]:rounded-t-lg data-[highlighted]:bg-[#323232] data-[highlighted]:text-violet-100"
-                onClick={() => onGenerateImage()}
+                onClick={() => onGeneratePrompt()}
               >
                 <Sparkles width={20} height={20} />Generate with AI
               </DropdownMenu.Item>

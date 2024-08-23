@@ -5,10 +5,10 @@ const Banner1 = () => {
       <div className="w-full h-full absolute z-10" />
       <div className="flex flex-col h-full w-full px-4 pt-4 pb-[50px] sm:px-8 sm:pt-8 sm:pb-16 justify-between">
         <div className="flex flex-col w-full sm:w-[450px] text-start">
-          <h1 className="text-black text-[20px] sm:text-[32px] text-semibold font-inter">
+          <h1 className="text-black text-[20px] sm:text-[32px] font-medium ">
             Knowledge Packs
           </h1>
-          <div className="text-black text-[13px] sm:text-[15px] font-inter leading-5 tracking-[0.25px] mt-2">
+          <div className="text-black text-[13px] sm:text-[15px]  leading-5 tracking-[0.25px] mt-2">
             {
               "You are 20 coins away from being able to order your saved product Elgato HD60 Capture Card."
             }

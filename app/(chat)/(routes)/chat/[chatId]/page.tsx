@@ -59,8 +59,28 @@ const Page = async ({ params }: PageProps) => {
     },
   });
 
+  const likeCount = await prismadb.characterFeedback.count({
+    where: {
+      characterId: params.chatId,
+      like: true
+    }
+  });
+
+  const feedback = await prismadb.characterFeedback.findFirst({
+    where: {
+      characterId: params.chatId,
+      userId: userId
+    }
+  });
   return (
-    <ChatPage userSettings={userSettings} character={character} userId={userId} />
+    <ChatPage
+      userSettings={userSettings}
+      character={character}
+      userId={userId}
+      likeCount={likeCount}
+      like={feedback?.like}
+      star={feedback?.star}
+    />
   );
 };
 

@@ -22,12 +22,7 @@ export async function GET() {
       select: {
         id: true,
         name: true,
-        category: {
-          select: {
-            id: true,
-            name: true,
-          }
-        }
+        category: true
       }
     });
     return NextResponse.json(tags);

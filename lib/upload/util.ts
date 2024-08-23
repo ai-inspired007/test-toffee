@@ -9,6 +9,11 @@ export const validImageInputTypes = [
   "image/webp",
 ];
 
+export const validAudioInputTypes = [
+  "audio/mpeg",
+  "audio/wav"
+];
+
 export const getBase64 = (file: File) => {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader();

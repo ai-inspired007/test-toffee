@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Providers } from "./providers";
 
-import "./globals.css";
-import "./slide.css"
+import "./styles/globals.css";
+import "./slide.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ToastContainer } from "react-toastify";
 import { Subscription } from "@/components/toffee/Subscription";
@@ -26,8 +26,8 @@ export default async function RootLayout({
   if (session && session.user && session.user.id) {
     const userSettings = await prismadb.userSettings.findUnique({
       where: {
-        userId: session.user.id
-      }
+        userId: session.user.id,
+      },
     });
     isProUser = userSettings != null && userSettings.plan === "PRO";
     console.log("[USER_PRO_PLAN]", isProUser);

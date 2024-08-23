@@ -9,7 +9,8 @@ type DataProps = {
   className: string;
   link: string
   description?: string;
-  totChats?: number;
+  totChats: number;
+  isMobile?: boolean;
 };
 
 type CarouselHandle = {
@@ -20,7 +21,7 @@ type CarouselHandle = {
 const TagCarousel = forwardRef<
   CarouselHandle,
   React.HTMLAttributes<HTMLDivElement> & DataProps
->(({ title, children, className, totChats=0, link }, ref) => {
+>(({ title, children, className, totChats=0, link, isMobile=false }, ref) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
@@ -64,7 +65,7 @@ const TagCarousel = forwardRef<
   }, [children]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 mb-3">
       <div className="flex flex-row justify-between text-white">
         <div className="flex flex-col gap-1 pb-2">
           <div className="flex flex-row gap-4">
@@ -74,12 +75,12 @@ const TagCarousel = forwardRef<
               <span>{formatNumber(totChats)}</span>
             </div>
           </div>
-          <span className="text-sm font-inter text-text-tertiary font-light">Take a look on available add-ons and connect it to your character</span>
+          {!isMobile && <span className="text-sm  text-text-tertiary font-light">Take a look on available add-ons and connect it to your character</span>}
         </div>
         {isScrollable && (
-          <div className="flex flex-row gap-2 items-center pr-6">
+          <div className="flex flex-row gap-2 items-center sm:pr-6 pr-4">
             <span className="text-sm font-[500] text-[#BC7F44]">Show All</span>
-            <div className="flex flex-row gap-1">
+            {!isMobile && <div className="flex flex-row gap-1">
               <span
                 className={`cursor-pointer ${atStart ? 'text-gray-500' : ''}`}
                 onClick={handlePrevClick}
@@ -94,10 +95,11 @@ const TagCarousel = forwardRef<
               >
                 <ArrowRight className="h-5 w-5" />
               </span>
-            </div>
+            </div>}
           </div>
         )}
       </div>
+      {isMobile && <span className="text-sm  text-text-tertiary font-light">Take a look on available add-ons and connect it to your character</span>}
       <div
         className="no-scrollbar flex flex-row gap-4 overflow-auto"
         ref={scrollContainerRef}
@@ -108,5 +110,5 @@ const TagCarousel = forwardRef<
     </div>
   );
 });
-TagCarousel.displayName = "TagCarousel"; 
+TagCarousel.displayName = "TagCarousel";
 export default TagCarousel;

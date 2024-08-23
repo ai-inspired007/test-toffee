@@ -34,14 +34,14 @@ const StartWithCard = ({
         <BotAvatar image={character.image || "/default.png"} size={8} />
         <div className="flex flex-col">
           <span className="text-white text-sm font-medium">{character.name}</span>
-          <p className="text-text-additional font-inter text-xs">{character && character.description && character.description.length > 25
+          <p className="text-text-additional  text-xs">{character && character.description && character.description.length > 25
             ? `${character.description.slice(0, 25)}...`
             : character.description}</p>
         </div>
       </div>
       <div className="px-2 flex flex-col gap-1 w-full mb-2">
         {selectedQuestions.map(q => (  
-          <div key={q.id} className="px-4 py-2.5 font-inter text-sm font-medium text-text-sub bg-[#2F2F2F] rounded-lg">{q.question}</div>  
+          <div key={q.id} className="px-4 py-2.5  text-sm font-medium text-text-sub bg-[#2F2F2F] rounded-lg">{q.question}</div>  
         ))}  
       </div>
     </div>

@@ -1,0 +1,23 @@
+.custom-slider {
+  background-color: #242428 !important;
+  background-color: #141416 !important;
+  .bg-primary {
+    background-color: #bc7f44 !important;
+  }
+  .rounded-full {
+    border: 2px solid #121212;
+  }
+  .h-1 {
+    height: 0.5rem;
+  }
+  .w-1\.5 {
+    width: 0.6rem;
+  }
+  .h-1\.5 {
+    height: 0.6rem;
+    background-color: #bc7f44 !important;
+  }
+  [data-in-range="false"] {
+    background-color: #242428 !important;
+  }
+}

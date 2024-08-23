@@ -20,13 +20,13 @@ export function GradientLoading(props?: React.SVGProps<SVGSVGElement>) {
         </linearGradient>
       </defs>
 
-      <g stroke-width="8">
+      <g strokeWidth="8">
         <path stroke="url(#spinner-secondHalf)" d="M 4 100 A 96 96 0 0 1 196 100" />
         <path stroke="url(#spinner-firstHalf)" d="M 196 100 A 96 96 0 0 1 4 100" />
 
         <path
           stroke="currentColor"
-          stroke-linecap="round"
+          strokeLinecap="round"
           d="M 4 100 A 96 96 0 0 1 4 98"
         />
       </g>

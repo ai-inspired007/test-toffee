@@ -63,10 +63,10 @@ const Files = ({
               </div>
             </div>
             <div className="flex flex-col gap-2 items-center justify-center">  
-              <div className="text-[14px] font-inter font-medium leading-normal text-center text-white">  
+              <div className="text-[14px]  font-medium leading-normal text-center text-white">  
                 {"Add more knowledge"}  
               </div>  
-              <div className="text-[12px] font-inter font-normal leading-5 text-center text-[#787878]">  
+              <div className="text-[12px]  font-normal leading-5 text-center text-[#787878]">  
                 {"PDF, PNG, MP4, DOC"}
               </div>  
             </div>  
@@ -83,8 +83,8 @@ const Files = ({
                 {getFileIcon(item.type)}
               </div>
               <div className="flex flex-col gap-2 items-center justify-center w-full">  
-                <p className="text-sm text-text-sub font-inter font-medium whitespace-nowrap overflow-hidden text-ellipsis w-full">{item.name}</p>   
-                <div className="text-[12px] font-inter font-normal leading-5 text-center text-[#787878]">  
+                <p className="text-sm text-text-sub  font-medium whitespace-nowrap overflow-hidden text-ellipsis w-full">{item.name}</p>   
+                <div className="text-[12px]  font-normal leading-5 text-center text-[#787878]">  
                   {formatBytes(item.size ? item.size : 0)}
                 </div>  
               </div>  
@@ -102,8 +102,8 @@ const Files = ({
                 {getFileIcon("")}
               </div>
               <div className="flex flex-col gap-2 items-center justify-center w-full">  
-                <p className="text-sm text-text-sub font-inter font-medium whitespace-nowrap overflow-hidden text-ellipsis w-full">{item.name}</p>   
-                <div className="text-[12px] font-inter font-normal leading-5 text-center text-[#787878]">  
+                <p className="text-sm text-text-sub  font-medium whitespace-nowrap overflow-hidden text-ellipsis w-full">{item.name}</p>   
+                <div className="text-[12px]  font-normal leading-5 text-center text-[#787878]">  
                   {formatBytes(item.size ? item.size : 0)}
                 </div>  
               </div>  
@@ -121,8 +121,8 @@ const Files = ({
                 <img src={item.icon} alt="Link Icon" className="w-12 h-12 rounded-md"/>
               </div>
               <div className="flex flex-col gap-2 items-center justify-center w-full">  
-                <p className="text-sm text-text-sub font-inter font-medium whitespace-nowrap overflow-hidden text-ellipsis w-full">{item.name}</p>   
-                <div className="text-[12px] font-inter font-normal leading-5 text-center text-[#787878]">  
+                <p className="text-sm text-text-sub  font-medium whitespace-nowrap overflow-hidden text-ellipsis w-full">{item.name}</p>   
+                <div className="text-[12px]  font-normal leading-5 text-center text-[#787878]">  
                 {formatBytes(item.size ? item.size : 0)}
                 </div>  
               </div>  
@@ -138,8 +138,8 @@ const Files = ({
       )}
       <Modal isOpen={isModal} onClose={() => setIsModal(false)} className="w-full flex-col flex justify-center items-center">
         <div className="flex flex-col bg-bg-2 w-[368px] h-[172px] justify-start rounded-xl px-8">
-          <span className="mt-8 text-white text-sm font-inter font-medium text-center">{"You want to delete this file?"}</span>
-          <span className=" mt-2 text-[#B1B1B1] text-sm font-inter font-normal text-center">{"If you delete it, you can't recover it."}</span>
+          <span className="mt-8 text-white text-sm  font-medium text-center">{"You want to delete this file?"}</span>
+          <span className=" mt-2 text-[#B1B1B1] text-sm  font-normal text-center">{"If you delete it, you can't recover it."}</span>
           <div className="flex flex-row justify-center gap-2 mt-10">
             <button onClick={() => setIsModal(false)} className=" w-full bg-[#202020]/30 rounded-full text-center text-white px-4 py-1.5 cursor-pointer font-normal text-sm border border-white/20">
               Cancel

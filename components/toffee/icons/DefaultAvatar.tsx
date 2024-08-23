@@ -2,7 +2,7 @@ export function DefaultAvatar(props?: React.SVGProps<SVGSVGElement>) {
   return (
     <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" {...props}>
       <rect width="180" height="180" rx="90" fill="url(#pattern0_3861_18508)"/>
-      <rect x="0.5" y="0.5" width="179" height="179" rx="89.5" stroke="white" stroke-opacity="0.1"/>
+      <rect x="0.5" y="0.5" width="179" height="179" rx="89.5" stroke="white" strokeOpacity="0.1"/>
       <defs>
         <pattern id="pattern0_3861_18508" patternContentUnits="objectBoundingBox" width="1" height="1">
           <use xlinkHref="#image0_3861_18508" transform="scale(0.0025)"/>

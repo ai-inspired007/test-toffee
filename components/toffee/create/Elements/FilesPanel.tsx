@@ -1,5 +1,6 @@
+import { KnowledgeFile } from "@prisma/client";
 import { FilesPrivate } from "../../icons/Lock";
-const Files = ({ files }: { files: Partial<File>[] }) => {
+const Files = ({ files }: { files: Partial<KnowledgeFile>[] }) => {
     return (
         <div className="flex-grow items-center justify-center flex flex-col">
             {files.length > 0 ? (<div>{files.length}</div>) : (

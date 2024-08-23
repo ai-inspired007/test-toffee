@@ -1,28 +1,12 @@
 import { KnowledgePack } from "@prisma/client";
 import Image from "next/image";
-import { useState } from "react";
-
 const CandyCard = ({
   candy,
 }: {
   candy: Partial<KnowledgePack>;
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const formatNumber = (num: number): string => {
-    if (num >= 1_000_000) {
-      return (num / 1_000_000).toFixed(1) + 'M';
-    }
-    if (num >= 1_000) {
-      return (num / 1_000).toFixed(1) + 'k';
-    }
-    return num.toString();
-  };
   return (
-    <div
-      className="relative flex h-32 w-80 min-w-80 items-center justify-center rounded-2xl bg-center cursor-pointer font-inter"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div className="relative flex h-32 sm:w-80 w-full min-w-80 items-center justify-center rounded-2xl bg-center cursor-pointer  border border-white/10">
       <Image
         src={candy.image || "/default.png"}
         alt="candy_image"
@@ -33,11 +17,11 @@ const CandyCard = ({
       />
       <div className="left-0 top-0 z-20 flex h-full w-full flex-col justify-end rounded-2xl bg-gradient-to-b from-transparent via-black/60 to-black">
         <div className="flex h-full flex-col justify-end space-y-1 px-4 pb-2">
-          <div className="self-stretch font-inter font-medium text-white">
+          <div className="self-stretch  font-medium text-white">
             {candy.name}
           </div>
           <div className="inline-flex items-center justify-start gap-2 ">
-            <div className="font-inter text-xs font-normal leading-none text-zinc-400">
+            <div className=" text-xs font-normal leading-none text-zinc-400">
               VectorChat
             </div>
             <div className="h-1 w-1 rounded-full bg-zinc-400"></div>
@@ -56,12 +40,12 @@ const CandyCard = ({
                   />
                 </svg>
               </div>
-              <div className="font-inter text-xs font-normal leading-none text-zinc-400">
+              <div className=" text-xs font-normal leading-none text-zinc-400">
                 {/* {candy. !== undefined && formatNumber(character._count.messages)} */}
               </div>
             </div>
           </div>
-          <div className="self-stretch font-inter text-xs text-text-tertiary">
+          <div className="self-stretch  text-xs text-text-tertiary">
             {candy.description && candy.description.length > 25
               ? `${candy.description.slice(0, 25)}...`
               : candy.description}

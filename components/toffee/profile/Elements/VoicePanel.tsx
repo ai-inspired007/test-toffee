@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { RiPlayFill } from '../../icons/PlayFill';
-import { RiVoiceprintLine } from '../../icons/VoicePrint';
+import VoiceCard from '../../VoiceCard';
+import { Empty } from "../../icons/Empty";
 
 type VoiceType = {
   name: string;
@@ -13,44 +13,6 @@ const generateGradientBackgrounds = (colors: string[], length: number): string[]
   const selectedColors = shuffledColors.slice(0, length);
   return selectedColors.map(color => `linear-gradient(to right, ${color}4D 0%, ${color}00 15%)`);
 };
-
-interface VoiceCardProps {
-  voice: VoiceType;
-  index: number;
-  togglePlayPause: (index: number) => void;
-  isPlaying: boolean;
-  gradientColor: string;
-}
-
-const VoiceCard: React.FC<VoiceCardProps> = ({ voice, index, togglePlayPause, isPlaying, gradientColor }) => {
-  const handleClick = () => {
-    togglePlayPause(index);
-  };
-
-  const originColor = gradientColor.match(/(#[0-9A-F]{6})4D/i)?.[1] || '#ffffff';
-
-  return (
-    <div className='bg-bg-3 rounded-2xl sm:w-fit w-full'>
-    <div
-      className="flex flex-row items-center p-4 rounded-2xl gap-4 border border-white/10"
-      style={{
-        background: isPlaying ? gradientColor : "none",
-      }}
-    >
-      <div onClick={handleClick} className="cursor-pointer">
-        <div className="rounded-full p-2 w-12 h-12 flex items-center justify-center" style={{ backgroundColor: originColor }}>
-          {isPlaying ? <RiVoiceprintLine className='w-6 h-6'/> : <RiPlayFill className='w-6 h-6'/>}
-        </div>
-      </div>
-      <div className="text-left">
-        <span className=" block font-medium font-inter text-white">{voice.name}</span>
-        <span className=" block  text-[#787878] text-xs font-inter">{voice.description}</span>
-      </div>
-    </div>
-    </div>
-  );
-};
-
 interface VoicesProps {
   type: string;
 }
@@ -95,17 +57,30 @@ const Voices: React.FC<VoicesProps> = ({ type }) => {
   };
 
   return (
-    <div className="sm:grid-cols-auto-fit flex flex-col sm:flex-row flex-wrap min-w-max gap-4 justify-start">
-      {voicelist.map((voice, index) => (
-        <VoiceCard
-          key={index}
-          voice={voice}
-          index={index}
-          togglePlayPause={togglePlayPause}
-          isPlaying={index === playingIndex}
-          gradientColor={gradientBackgrounds[index]}
-        />
-      ))}
+    <div className={`sm:grid-cols-auto-fit flex flex-col sm:flex-row flex-wrap gap-4 ${voicelist.length ? "justify-start" : "justify-center"}`}>
+      {voicelist.length > 0 ? (
+        voicelist.map((voice, index) => (
+          <VoiceCard
+            key={index}
+            voice={voice}
+            index={index}
+            togglePlayPause={togglePlayPause}
+            isPlaying={index === playingIndex}
+            gradientColor={gradientBackgrounds[index]}
+          />
+        ))
+      ) : (
+        <div className="flex items-center w-full min-h-full justify-center">
+          <div className="flex flex-col gap-2 items-center">
+            <Empty />
+            <span className="text-base  text-text-sub font-medium text-center mt-2">There is no voice</span>
+            <span className="text-sm text-text-tertiary  text-center">{type==="admin"?"Looks like you still don't have any personal voice":"Looks like this auther don't have any voices yet"}</span>
+            {type==="admin" && <div className="flex flex-row items-center py-1.5 px-4 gap-1 text-white bg-gradient-to-r from-[#C28851] to-[#B77536] rounded-full h-9 justify-center cursor-pointer" onClick={()=>router.push("/create/candy")}><span className="text-sm py-1 medium">Add new voice</span></div>}
+          </div>
+        </div>
+      )
+    }
+
     </div>
   );
 };

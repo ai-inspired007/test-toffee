@@ -59,10 +59,17 @@ const Discover: React.FC = async () => {
       characters: true
     }
   });
-  const tags = await prismadb.tag.findMany()
-  console.log(tags)
+  const tags = await prismadb.tag.findMany({
+    select: {
+      id: true,
+      categoryId: true,
+      name: true,
+      characters: true
+    }
+  })
+
   return (
-    <DiscoverPage categories={categories} characters={characters}/>
+    <DiscoverPage categories={categories} characters={characters} tags={tags} />
   )
 }
 

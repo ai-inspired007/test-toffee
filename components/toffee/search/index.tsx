@@ -12,6 +12,10 @@ import { TCategory, TKnowledgePack, TCharacter, User, TopOne } from "@/lib/types
 import { SearchBox, AutocompleteItem } from "../SearchBox";
 import SearchTopSection from "./Elements/TopSection";
 import stringComparison from "string-comparison";
+import MobileNavPanel from "../MobileNav";
+import { useSidebarContext } from "@/contexts/SidebarProvider";
+import { useMediaQuery } from "react-responsive";
+import { useSearchParams, useRouter } from 'next/navigation';
 interface PageProps {
   characterlist: TCharacter[];
   userlist: User[];
@@ -22,14 +26,16 @@ interface PageProps {
 
 export function SearchPage({ characterlist, userlist, knowledges, categories, tags }: PageProps) {
   const tabs = ["Trending", "Categories"];
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const initialTab = searchParams.get('tab')?.toLocaleLowerCase() || tabs[0].toLocaleLowerCase();
+  const [selectedTab, setSelectedTab] = useState(initialTab);
   const [filteredCharacters, setFilteredCharacters] = useState<TCharacter[]>(characterlist);
   const [filteredKnowledges, setFilteredKnowledges] = useState<TKnowledgePack[]>(knowledges);
   const [filteredUsers, setFilteredUsers] = useState<User[]>(userlist);
   const [filteredTags, setFilteredTags] = useState<Tag[]>(tags);
   const [topone, setTopOne] = useState<TopOne | null>(null);
   const [query, setQuery] = useState<string>("");
-
-  const [selectedTab, setSelectedTab] = useState(tabs[0]);
   const [autocompleteItems, setAutocompleteItems] = useState<AutocompleteItem[]>([]);
   let levenshtein = stringComparison.levenshtein;
   const findTopOne = (allItems: AutocompleteItem[], query: string): TopOne | null => {
@@ -115,8 +121,24 @@ export function SearchPage({ characterlist, userlist, knowledges, categories, ta
     setTopOne(topMatch);
 
   }, [query, characterlist, knowledges, userlist, tags, selectedTab]);
+
+  const { open, toggleOpen } = useSidebarContext();
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+  const handleResize = () => {
+    if (isMobile && open) {
+      toggleOpen(false);
+    }
+  };
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [open, isMobile]);
+
+  const handleTabClick = (name: string) => {
+    setSelectedTab(name.toLowerCase());
+  };
   return (
-    <div className="h-screen w-full overflow-hidden p-0 sm:p-2">
+    <div className="h-screen w-full overflow-hidden p-0 sm:p-2 mb-20 sm:mb-0">
       <div className="flex h-full w-full flex-col items-center justify-start rounded-2xl bg-[#121212]">
         <SearchBox query={query} setQuery={setQuery} autocompleteItems={autocompleteItems} except={topone?.data.name} />
         {query.length === 0 && (
@@ -126,14 +148,14 @@ export function SearchPage({ characterlist, userlist, knowledges, categories, ta
               {tabs.map((name) => (
                 <div
                   key={name}
-                  className={`inline-flex h-8 cursor-pointer items-center justify-center gap-2 rounded-lg px-3 py-1.5 ${selectedTab === name ? "bg-white text-black" : "bg-neutral-800 text-zinc-400"}`}
-                  onClick={() => setSelectedTab(name)}
+                  className={`inline-flex h-8 cursor-pointer items-center justify-center gap-2 rounded-lg px-3 py-1.5 ${selectedTab.toLocaleLowerCase() === name.toLocaleLowerCase() ? "bg-white text-black" : "bg-neutral-800 text-zinc-400"}`}
+                  onClick={()=>handleTabClick(name)}
                 >
                   <div className=" text-sm font-medium leading-none ">{name}</div>
                 </div>
               ))}
             </div>
-            {selectedTab === "Trending" && (
+            {selectedTab === "trending" && (
               <div className="no-scrollbar flex w-full flex-col gap-6 overflow-y-auto p-5 sm:p-6 pt-4">
                 {characterlist.length > 0 && (
                   <div className="w-full overflow-hidden flex flex-col gap-3">
@@ -143,24 +165,26 @@ export function SearchPage({ characterlist, userlist, knowledges, categories, ta
                       matchedList.map((item) => totChats + item._count.messages);
                       return (
                         matchedList.length > 0 ?
-                          <TagCarousel key={index} totChats={totChats} title={`#${tag.name}`} className="text-white font-inter text-[20px] font-semibold hover:underline" link={`/categories/${tag.categoryId}/tag/${tag.id}`}>
+                          <TagCarousel isMobile={isMobile} key={index} totChats={totChats} title={`#${tag.name}`} className="text-white  text-[20px] font-semibold hover:underline" link={`/categories/${tag.categoryId}/tag/${tag.id}`}>
                             {matchedList.map((character, i) => (
                               <CharacterCard character={character} key={i} />
                             ))}
                           </TagCarousel> : null
                       )
                     }) :
-                      <div className="flex flex-row flex-wrap w-full gap-3">
-                        {characterlist.map((character, i) => (
-                          <CharacterCard character={character} key={i} />
-                        ))}
+                      <div className="overflow-hidden">
+                        <Carousel title="Characters" className="text-white  text-[16px] sm:text-[20px] font-semibold">
+                          {characterlist.map((character, i) => (
+                            <CharacterCard character={character} key={i} />
+                          ))}
+                        </Carousel>
                       </div>
                     }
                   </div>
                 )}
               </div>
             )}
-            {selectedTab === "Categories" && (
+            {selectedTab === "categories" && (
               <div className="no-scrollbar flex w-full flex-col gap-6 overflow-y-auto p-5 sm:p-6 pt-4">
                 {filteredCharacters.length > 0 && (
                   <div className="w-full flex flex-row flex-wrap gap-3 overflow-hidden">
@@ -174,19 +198,25 @@ export function SearchPage({ characterlist, userlist, knowledges, categories, ta
           </div>
         )}
         {query.length > 0 && (
-          <div className="no-scrollbar flex w-full flex-col gap-6 overflow-y-auto p-5 sm:p-6 pt-4">
-            <div>
+          <div className="no-scrollbar flex w-full flex-col gap-6 overflow-y-auto p-5 sm:p-6 pt-4 mb-8">
+            <div className="h-full">
               <div className="w-full flex flex-col sm:flex-row gap-4">
                 <div className="max-w-[415px] w-full my-3">
                   {topone && <TopCard result={topone} />}
                 </div>
                 {filteredKnowledges.length > 0 && (
                   <div className="overflow-hidden">
-                    <Carousel title="Candies" className="my-2 mt-5 text-[#777777] text-sm font-light">
-                      {filteredKnowledges.slice(0, 6).map((knowledge, index) => (
+                    {!isMobile ? <Carousel title="Candies" className="my-2 mt-5 text-[#777777] text-sm font-light">
+                      {filteredKnowledges.map((knowledge, index) => (
                         <CandyCard candy={knowledge} key={index} />
                       ))}
-                    </Carousel>
+                    </Carousel> :
+                      <div className="flex flex-col w-full">
+                        {filteredKnowledges.map((knowledge, index) => (
+                          <CandyCard candy={knowledge} key={index} />
+                        ))}
+                      </div>
+                    }
                   </div>
                 )}
               </div>
@@ -199,17 +229,17 @@ export function SearchPage({ characterlist, userlist, knowledges, categories, ta
                   </Carousel>
                 </div>
               )}
-              <div className="">
+              {filteredUsers.length > 0 && (<div className="">
                 <div className="my-2 mt-5 text-[#777777] text-sm font-light">Users</div>
-                <div className="flex w-full flex-row flex-wrap gap-1">
+                <div className="w-full sm:flex flex-row flex-wrap grid grid-cols-2 gap-2">
                   {filteredUsers.map((user, i) => (
                     <div
                       key={i}
-                      className="flex w-[216px] flex-row  items-center justify-start gap-3 rounded-2xl bg-neutral-800 p-2 pr-5"
+                      className="flex flex-col min-w-[152px] items-center justify-start gap-3 rounded-2xl bg-neutral-800 p-4 pt-5"
                     >
                       <Image
                         alt="User Profile Picture"
-                        className="h-12 w-12 items-center rounded-[8px] object-cover"
+                        className="h-[72px] w-[72px] items-center rounded-full object-cover"
                         src={user.profile_image || "/profile/default_user.png"}
                         width={0}
                         height={0}
@@ -226,11 +256,19 @@ export function SearchPage({ characterlist, userlist, knowledges, categories, ta
                     </div>
                   ))}
                 </div>
-              </div>
+              </div>)}
+              {!topone && filteredKnowledges.length === 0 && filteredCharacters.length === 0 && filteredUsers.length === 0 && (
+                <div className="w-full h-full flex flex-col items-center justify-center">
+                  <Image src={"/search/empty.svg"} alt="" sizes="100vw" width={0} height={0} className="w-32 object-contain" />
+                  <span className="text-text-sub  font-medium mt-8">{"Oops! No results found"}</span>
+                  <p className="text-text-tertiary text-sm  mt-2">{"Please check your search terms."}</p>
+                </div>
+              )}
             </div>
           </div>
         )}
       </div>
+      {isMobile && <MobileNavPanel />}
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { useChat, useCompletion } from "ai/react";
 import type { Character, Message, UserSettings } from "@prisma/client";
 import { ChatHeader } from "./Elements/ChatHeader";
 import { useRouter } from "next/navigation";
-import { ElementRef, FormEvent, useEffect, useRef, useState } from "react";
+import { Dispatch, ElementRef, FormEvent, useEffect, useRef, useState } from "react";
 import { ChatForm } from "./Elements/ChatForm";
 import { ChatMessages } from "./Elements/ChatMessages";
 import { ChatMessageProps } from "./Elements/ChatMessage";
@@ -24,8 +24,9 @@ import { MicrophoneContextProvider } from "@/contexts/Microphone";
 import { AudioStoreContextProvider } from "@/contexts/AudioStore";
 import { MessageMetadataContextProvider } from "@/contexts/MessageMetadata";
 import { DeepgramContextProvider } from "@/contexts/Deepgram";
-
-const ChatMainSection = ({ character, openRight, setRightOpen, userSettings, userId }: {
+import { ReportModal } from "./Elements/ReportModal";
+import { ShareModal } from "./Elements/ShareModal";
+const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRecentOpen, userSettings, userId, isReportModal, setReportModal, isShareModal, setShareModal }: {
   character: Character & {
     messages: Message[];
     _count: {
@@ -34,10 +35,15 @@ const ChatMainSection = ({ character, openRight, setRightOpen, userSettings, use
   },
   openRight: boolean,
   setRightOpen: (openRight: boolean) => void,
+  openRecent: boolean,
+  setRecentOpen: (openRecent: boolean) => void,
   userSettings: UserSettings | null;
   userId: string;
+  isReportModal: boolean;
+  setReportModal: Dispatch<React.SetStateAction<boolean>>;
+  isShareModal: boolean;
+  setShareModal: Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const { open, toggleOpen } = useSidebarContext();
   const router = useRouter();
   const { API, updateAPI, toggleBlocked } = useAIContext();
   const [messages, setMessages] = useState<ChatMessageProps[]>(
@@ -64,7 +70,6 @@ const ChatMainSection = ({ character, openRight, setRightOpen, userSettings, use
 
   // false = haven't started typing, true = started typing
   const [progress, setProgress] = useState(false);
-
 
   // Voice
   const [isVoice, setIsVoice] = useState(false);
@@ -140,10 +145,10 @@ const ChatMainSection = ({ character, openRight, setRightOpen, userSettings, use
   const onEmbedMessages = async () => {
     try {
       const apiUrl = `/api/chat/${character.id}/message/embed`;
-      
+
       const response = await axios.get(apiUrl);
-      
-      setMessages((current) => current.map(item => ({...item, isEmbedded: true})))
+
+      setMessages((current) => current.map(item => ({ ...item, isEmbedded: true })))
       console.log('Response received:', response.data);
     } catch (error) {
       // Error handling
@@ -254,7 +259,7 @@ const ChatMainSection = ({ character, openRight, setRightOpen, userSettings, use
     router.refresh();
   };
 
-  const onReGeneration = async (id: string) => { 
+  const onReGeneration = async (id: string) => {
     console.log(id);
     if (messages.length > 2) {
       const POST_URL = `/api/chat/${character.id}/${encodeURIComponent(
@@ -265,7 +270,7 @@ const ChatMainSection = ({ character, openRight, setRightOpen, userSettings, use
       setSelectedId(id);
       try {
         setLoading(true)
-        
+
         setMessages((current) => current.slice(0, -1));
 
         const response = await fetch(API_URL, {
@@ -304,8 +309,8 @@ const ChatMainSection = ({ character, openRight, setRightOpen, userSettings, use
     }
   }
 
-  const handleStreamingResponse = async (response: Response) => {  
-    const reader = response.body?.getReader();  
+  const handleStreamingResponse = async (response: Response) => {
+    const reader = response.body?.getReader();
 
     if (!reader) {
       console.error("Failed to get reader from response body");
@@ -315,16 +320,16 @@ const ChatMainSection = ({ character, openRight, setRightOpen, userSettings, use
     const decoder = new TextDecoder();
     let streamText = '';
 
-    const processStream = async () => {  
-      while (true) {  
-        const { done, value } = await reader.read();  
-        if (done) {  
-          setLoading(false);  
+    const processStream = async () => {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          setLoading(false);
 
-          console.log("Streaming completed");  
-          break;  
-        }  
-        const chunk = decoder.decode(value, { stream: true });  
+          console.log("Streaming completed");
+          break;
+        }
+        const chunk = decoder.decode(value, { stream: true });
         streamText += chunk;
         setCompletion(streamText);
       }
@@ -339,7 +344,7 @@ const ChatMainSection = ({ character, openRight, setRightOpen, userSettings, use
     try {
       const apiUrl = `/api/chat/character/message/${id}`;
       const response = await axios.delete(apiUrl);
-    
+
       // Status 200 is automatically assumed here for successful response
       setMessages(currentMessages => currentMessages.filter(item => item.id !== id));
     } catch (error) {
@@ -381,10 +386,6 @@ const ChatMainSection = ({ character, openRight, setRightOpen, userSettings, use
     e.dataTransfer.clearData();
   };
 
-  // useEffect(() => {
-  //   // console.log("[ISLOADINGCLIENT]: " + loading);
-  // }, [loading]);
-
   // TODO: move into separate component
   return (
     <>
@@ -394,17 +395,17 @@ const ChatMainSection = ({ character, openRight, setRightOpen, userSettings, use
             <NowPlayingContextProvider>
               <MessageMetadataContextProvider>
                 <DeepgramContextProvider>
-                  <VoiceChat character={character} />
+                  <VoiceChat character={character} isVoice={isVoice} setIsVoice={setIsVoice} />
                 </DeepgramContextProvider>
               </MessageMetadataContextProvider>
             </NowPlayingContextProvider>
           </AudioStoreContextProvider>
-        :
+          :
           <>
             <div
               onDrop={handleDrop}
               onDragOver={(e) => e.preventDefault()}
-              className="m-2 flex flex-grow flex-col items-center justify-start rounded-2xl bg-[#121212] bg-chat text-white relative"
+              className="sm:m-2 flex flex-grow flex-col items-center justify-start sm:rounded-2xl bg-[#121212] bg-chat text-white relative"
             >
               <ChatTopNav
                 character={character}
@@ -412,6 +413,8 @@ const ChatMainSection = ({ character, openRight, setRightOpen, userSettings, use
                 userId={userId}
                 needsOverlay={!!userSettings?.chat_background_image}
                 setRightOpen={() => setRightOpen(!openRight)}
+                openRecent={openRecent}
+                setRecentOpen={setRecentOpen}
               />
               <StreamingCompletionContext.Provider
                 value={{ completion, stopGenerating: onStopGeneration }}
@@ -454,6 +457,8 @@ const ChatMainSection = ({ character, openRight, setRightOpen, userSettings, use
                 />
               </StreamingCompletionContext.Provider>
             </div>
+            <ReportModal isReportModal={isReportModal} setReportModal={setReportModal} characterId={character.id} />
+            <ShareModal isShareModal={isShareModal} setShareModal={setShareModal} />
           </>
         }
       </MicrophoneContextProvider>

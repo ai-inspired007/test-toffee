@@ -73,4 +73,41 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+function OptionCard({
+  icon,
+  title,
+  name,
+  description,
+  onPressHandler,
+  currentType,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  name: string;
+  description: string;
+  onPressHandler: () => void;
+  currentType: any;
+}) {
+  return (
+    <Card
+      onClick={onPressHandler}
+      className={cn("p-6 pt-10 bg-bg-2 w-[248px] cursor-pointer", currentType === name ? "border border-white/30" : "border border-white/10",)}
+    >
+      <div className="flex h-full w-full flex-row lg:flex-col lg:items-center lg:justify-evenly">
+        <div
+          className={cn(
+            "my-auto aspect-square h-fit w-fit rounded-2xl p-4 transition duration-300",
+            currentType === name ? "bg-[#BC7F44] text-white" : "bg-bg-3 text-icon-3",
+          )}
+        >
+          {icon}
+        </div>
+        <div className="flex flex-col gap-2 items-center mt-10">
+          <h1 className="font-medium text-white ">{title}</h1>
+          <span className="text-[13px] text-text-additional md:text-center ">{description}</span>
+        </div>
+      </div>
+    </Card>
+  );
+}
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, OptionCard }
