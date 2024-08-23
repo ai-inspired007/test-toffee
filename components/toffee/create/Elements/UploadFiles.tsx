@@ -5,7 +5,7 @@ import Modal from "../../../ui/Modal";
 import { MdiInformationOutline } from "../../icons/InformationLine";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
-import Tooltip from "../../Tooltip";
+import Tooltip from "../../../ui/Tooltip";
 export const getFileIcon = (mimeType: string) => {
   const type = mimeType.toLowerCase();
 

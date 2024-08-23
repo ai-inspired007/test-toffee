@@ -8,7 +8,7 @@ import {
 } from "react";
 import { Character as BaseCharacterProps, Category as BaseCategory, Tag as BaseTag, CharacterTag as BaseCharacterTag } from "@prisma/client";
 import React from "react";
-import Carousel from "@/components/toffee/Carousel";
+import Carousel from "@/components/ui/Carousel";
 import TagCarousel from "@/components/toffee/TagCarousel";
 import CharacterCard from "@/components/toffee/CharacterCard";
 import CategoryCard from "@/components/toffee/CategoryCard";

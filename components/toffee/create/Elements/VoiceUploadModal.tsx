@@ -16,7 +16,7 @@ import { CandyFile } from "../Candy";
 import { MdiInformationOutline } from "../../icons/InformationLine";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
-import Tooltip from "../../Tooltip";
+import Tooltip from "../../../ui/Tooltip";
 import { getFileIcon } from "./UploadFiles";
 import { validAudioInputTypes } from "@/lib/upload/util";
 

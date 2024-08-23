@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import CharacterCard from "../../CharacterCard";
 import CandyCard from "../../CandyCard";
 import VoiceCard from "../../VoiceCard";
-import Carousel from "../../Carousel";
+import Carousel from "../../../ui/Carousel";
 import { useEffect, useState } from "react";
 
 type VoiceType = {
