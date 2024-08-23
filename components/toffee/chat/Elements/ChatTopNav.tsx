@@ -4,7 +4,7 @@ import {
   Settings,
   PanelRight
 } from "lucide-react";
-import { BotAvatar } from "./BotAvatar";
+import { BotAvatar } from "../../BotAvatar";
 import { useMediaQuery } from "react-responsive";
 import { RiVoiceprintLine } from "../../icons/VoicePrint";
 import { MdiInformationOutline } from "../../icons/InformationLine";
