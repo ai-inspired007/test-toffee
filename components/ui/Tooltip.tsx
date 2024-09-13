@@ -6,7 +6,7 @@ interface TooltipProps {
   className?: string
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ children, text, className }) => (
+const TooltipBox: React.FC<TooltipProps> = ({ children, text, className }) => (
   <div className="relative group">
     {children}
     <div className={`absolute z-10 hidden group-hover:block ${className}`}>
@@ -15,4 +15,4 @@ const Tooltip: React.FC<TooltipProps> = ({ children, text, className }) => (
   </div>
 );
 
-export default Tooltip;
+export default TooltipBox;
