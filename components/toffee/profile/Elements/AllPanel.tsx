@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import CharacterCard from "../../CharacterCard";
 import CandyCard from "../../CandyCard";
 import VoiceCard from "../../VoiceCard";
-import Carousel from "../../../ui/carousel";
+import Carousel from "../../../ui/Carousel";
 import { useEffect, useState } from "react";
 import VoiceCardDetailPopUp from "../../VoiceCardDetailPopUp";
 import Modal from "@/components/ui/Modal";

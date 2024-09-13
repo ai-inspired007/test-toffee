@@ -7,7 +7,7 @@ import { X } from 'lucide-react';
 import { RiLinkM } from '../../icons/Fork';
 import Modal from "../../../ui/Modal";
 import axios from 'axios';
-import Tooltip from '../../../ui/tooltip';
+import Tooltip from '../../../ui/Tooltip';
 
 export interface LinkProps {
   links: CandyLink[] | undefined;

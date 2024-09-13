@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Tag, UserSettings, Voice } from "@prisma/client";
 import Image from "next/image";
 import TagCarousel from "@/components/toffee/CarouselWithTag";
-import Carousel from "../../ui/carousel";
+import Carousel from "../../ui/Carousel";
 import CharacterCard from "@/components/toffee/CharacterCard";
 import CategoryCard2 from "./Elements/CategoryCard2";
 import CandyCard from "../CandyCard";

@@ -5,7 +5,7 @@ import Modal from "../../../ui/Modal";
 import { MdiInformationOutline } from "../../icons/InformationLine";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
-import Tooltip from "@/components/ui/tooltip";
+import Tooltip from "@/components/ui/Tooltip";
 import { KnowledgeFile } from "@prisma/client";
 import { formatBytes } from "./EditCandy";
 

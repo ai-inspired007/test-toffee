@@ -3,7 +3,7 @@ import { RiGlobalLine } from "../../icons/GlobalLine";
 import { RiLockLine } from "../../icons/Lock";
 import { RiDraftLine } from "../../icons/Files";
 import { Dispatch, FC, SetStateAction, useCallback, useState } from "react";
-import Tooltip from "../../../ui/tooltip";
+import Tooltip from "../../../ui/Tooltip";
 import { MdiInformationOutline } from "../../icons/InformationLine";
 import SelectPharse, { PharseProps } from "./SelectPharse";
 import { Tag } from "@prisma/client";
