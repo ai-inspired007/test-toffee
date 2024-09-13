@@ -41,6 +41,14 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "randomuser.me"
+      },
+      {
+        protocol: "https",
+        hostname: "source.boringavatars.com"
+      },
+      {
+        protocol: "http",
+        hostname: "source.boringavatars.com"
       }
     ],
   },

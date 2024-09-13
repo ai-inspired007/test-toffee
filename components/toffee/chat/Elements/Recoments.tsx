@@ -12,8 +12,8 @@ type RecommendedProps = {
 
 export function Recommended({ characters }: RecommendedProps) {
   return (
-    <DropdownWrapper label="Recommended">
-      <div className="flex  max-h-full flex-col gap-3 overflow-y-auto no-scrollbar">
+    <DropdownWrapper label="Recommended" height="29%">
+      <div className="no-scrollbar  flex max-h-full flex-col gap-3 overflow-y-auto">
         {characters.map((character, index) => {
           return (
             <div

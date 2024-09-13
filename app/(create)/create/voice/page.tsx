@@ -4,9 +4,10 @@ import { auth } from "@/auth";
 
 export type VoiceType = {
   name: string;
-  voiceId: number;
+  voiceId: string;
   description: string;
-  itemTypeId: number;
+  itemTypeId: string;
+  audioUrl: string;
 };
 
 export default async function VoiceCreatePage() {

@@ -1,0 +1,18 @@
+.theme-overflow-auto {
+  overflow-x: auto;
+  scrollbar-gutter: stable;
+
+  &::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: #e4e4e4;
+    border-radius: 100px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #aaaaaa;
+    border-radius: 100px;
+  }
+}

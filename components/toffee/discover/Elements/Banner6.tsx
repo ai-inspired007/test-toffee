@@ -6,10 +6,10 @@ const Banner6 = () => {
 
       <div className="flex flex-col h-full w-full px-4 pt-4 pb-[50px] sm:px-8 sm:pt-8 sm:pb-16 justify-between">
         <div className="flex flex-col w-full sm:w-[450px] text-start">
-          <h1 className="text-black text-[20px] sm:text-[32px] font-medium ">
+          <h1 className="text-white text-[20px] sm:text-[32px] font-medium ">
             {"Curious about Eren Yeager's opinion on Game of Thrones?"}
           </h1>
-          <div className="text-black text-[13px] sm:text-[15px]  leading-5 tracking-[0.25px] mt-2">
+          <div className="text-white text-[13px] sm:text-[15px]  leading-5 tracking-[0.25px] mt-2">
             {
               "Connect the game of Thrones candy to enhance your character with all of ASOIAF!"
             }

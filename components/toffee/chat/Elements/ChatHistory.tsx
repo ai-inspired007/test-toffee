@@ -7,8 +7,10 @@ type ChatHistoryProps = {
 
 export function ChatHistory({ messages }: ChatHistoryProps) {
   return (
-    <DropdownWrapper label="Chat History">
-      <div className={`flex max-h-full w-full flex-col gap-2 overflow-y-auto no-scrollbar`}>
+    <DropdownWrapper label="Chat History" height="21%">
+      <div
+        className={`no-scrollbar flex max-h-full w-full flex-col gap-2 overflow-y-auto`}
+      >
         {messages.map((message, index) => {
           return (
             <div
@@ -20,7 +22,9 @@ export function ChatHistory({ messages }: ChatHistoryProps) {
                 );
               }}
             >
-              <span className="text-xs  text-[#727272]">{formatHistoryDate(message.createdAt)}</span>
+              <span className="text-xs  text-[#727272]">
+                {formatHistoryDate(message.createdAt)}
+              </span>
               <span className="line-clamp-1  text-sm text-text-sub">
                 {message.content}
               </span>

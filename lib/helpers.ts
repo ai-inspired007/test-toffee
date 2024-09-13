@@ -1,6 +1,10 @@
+import { CandyFile } from "@/components/toffee/create/Candy";
 import { LiveTranscriptionEvent } from "@deepgram/sdk";
-import moment from "moment"
+import moment from "moment";
 import { ChatCompletionStream } from "openai/lib/ChatCompletionStream";
+import { toast } from "react-toastify";
+
+const VoiceUrl = `https://api.elevenlabs.io/v1/voices/`;
 
 /**
  * get the sentence from a LiveTranscriptionEvent
@@ -45,7 +49,7 @@ function contextualHello(): string {
   } else {
     return "Hello";
   }
-};
+}
 
 function contextualGreeting(text: string): string {
   const greeting = {
@@ -54,26 +58,29 @@ function contextualGreeting(text: string): string {
   };
 
   return sprintf(greeting.text, ...greeting.strings);
-};
+}
 
 /**
  * Generate random string of alphanumerical characters.
- * 
+ *
  * @param {number} length this is the length of the string to return
  * @returns {string}
  */
 function generateRandomString(length: number): string {
-  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
+  let characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
 
   for (let i = 0; i < length; i++) {
-    let randomChar = characters.charAt(Math.floor(Math.random() * characters.length));
+    let randomChar = characters.charAt(
+      Math.floor(Math.random() * characters.length),
+    );
     result += randomChar;
   }
 
   return result;
 
-  return 'test';
+  return "test";
 }
 
 interface AudioChunk {
@@ -106,7 +113,7 @@ function inputStreamTextToSpeech(
         stability: 0.5,
         similarity_boost: 0.8,
       },
-      xi_api_key: process.env.ELEVENLABS_API_KEY,
+      xi_api_key: process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY,
     };
 
     socket.send(JSON.stringify(streamStart));
@@ -175,12 +182,62 @@ async function* llmMessageSource(
   llmStream: ChatCompletionStream,
 ): AsyncIterable<string> {
   for await (const chunk of llmStream) {
-    
     const message = chunk.choices[0].delta.content;
-    console.log(message)
+    console.log(message);
     if (message) {
       yield message;
     }
+  }
+}
+
+async function addVoice({
+  name,
+  description,
+  files,
+  labels,
+}: {
+  name: string;
+  description: string;
+  files: CandyFile[];
+  labels: JSON;
+}) {
+  try {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    files?.forEach((file) => file.file && formData.append("files", file.file));
+    formData.append("labels", JSON.stringify(labels));
+
+    //   formData.forEach((value, key) => {
+    //     console.log(`${key}: ${value}`);
+    // });
+    const response = await fetch("/api/knowledge/create", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      toast.success("Successfully created Candy!", {
+        theme: "colored",
+        hideProgressBar: true,
+        autoClose: 1500,
+      });
+    } else {
+      const error = await response.text();
+      toast.error(`Error creating candy: ${error}`, {
+        theme: "colored",
+        hideProgressBar: true,
+        autoClose: 1500,
+      });
+    }
+  } catch (error) {
+    console.error("Error creating candy:", error);
+    toast.error("Error creating candy", {
+      theme: "colored",
+      hideProgressBar: true,
+      autoClose: 1500,
+    });
+  } finally {
   }
 }
 
@@ -189,5 +246,6 @@ export {
   contextualGreeting,
   utteranceText,
   llmMessageSource,
-  inputStreamTextToSpeech
+  inputStreamTextToSpeech,
+  addVoice,
 };

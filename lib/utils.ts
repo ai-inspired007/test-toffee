@@ -54,13 +54,13 @@ export const getURL = (path: string = "") => {
   // Check if NEXT_PUBLIC_SITE_URL is set and non-empty. Set this to your site URL in production env.
   let url =
     process?.env?.NEXT_PUBLIC_SITE_URL &&
-    process.env.NEXT_PUBLIC_SITE_URL.trim() !== ""
+      process.env.NEXT_PUBLIC_SITE_URL.trim() !== ""
       ? process.env.NEXT_PUBLIC_SITE_URL
       : // If not set, check for NEXT_PUBLIC_VERCEL_URL, which is automatically set by Vercel.
       process?.env?.NEXT_PUBLIC_VERCEL_URL &&
         process.env.NEXT_PUBLIC_VERCEL_URL.trim() !== ""
-      ? process.env.NEXT_PUBLIC_VERCEL_URL
-      : // If neither is set, default to localhost for local development.
+        ? process.env.NEXT_PUBLIC_VERCEL_URL
+        : // If neither is set, default to localhost for local development.
         "http://localhost:3000/";
 
   // Trim the URL and remove trailing slash if exists.
@@ -107,4 +107,10 @@ export const cosinesim = (A: number[], B: number[]) => {
   mA = Math.sqrt(mA);
   mB = Math.sqrt(mB);
   return mA === 0 || mB === 0 ? 1 : dotproduct / (mA * mB);
+};
+
+export const generateGradientBackgrounds = (colors: string[], length: number): string[] => {
+  const shuffledColors = [...colors].sort(() => 0.5 - Math.random());
+  const selectedColors = shuffledColors.slice(0, length);
+  return selectedColors.map(color => `linear-gradient(to right, ${color}4D 0%, ${color}00 45.07%)`);
 };

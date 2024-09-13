@@ -2,16 +2,17 @@ import { ChatHistory } from "./ChatHistory";
 import { Recommended } from "./Recoments";
 import { CharacterCard } from "./CharacterCard";
 import { AnimatePresence, motion } from "framer-motion";
-import { Character, Message } from "@prisma/client";
+import { Character, KnowledgePack, Message } from "@prisma/client";
 import { Dispatch } from "react";
 import { useMediaQuery } from "react-responsive";
+import { CandiesCard } from "./CandiesCard";
 type Props = {
   isOpen: boolean;
   character: Character & {
-    messages: Message[]
+    messages: Message[];
     _count: {
-      messages: number
-    }
+      messages: number;
+    };
   };
   openCandy: boolean;
   setCandyOpen: (openCandy: boolean) => void;
@@ -22,12 +23,22 @@ type Props = {
   setShareModal: Dispatch<React.SetStateAction<boolean>>;
 };
 
-export function ChatDetail({ isOpen, character, openCandy, setCandyOpen, likeCount, like, star, setReportModal, setShareModal }: Props) {
-  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+export function ChatDetail({
+  isOpen,
+  character,
+  openCandy,
+  setCandyOpen,
+  likeCount,
+  like,
+  star,
+  setReportModal,
+  setShareModal,
+}: Props) {
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   return (
     <motion.div
-      animate={{ width: isOpen ? isMobile?"100%":"300px" : "0px" }}
-      className={`${isOpen? "w-[300px] min-w-[300px] overflow-hidden h-screen": "w-0 overflow-hidden z-10"} ${isMobile?"absolute top-0 p-0 bg-bg-2":"py-2 pr-2 bg-black"}` }
+      animate={{ width: isOpen ? (isMobile ? "100%" : "300px") : "0px" }}
+      className={`${isOpen ? "h-screen w-[300px] min-w-[300px] overflow-hidden" : "z-10 w-0 overflow-hidden"} ${isMobile ? "absolute top-0 bg-bg-2 p-0" : "bg-black py-2 pr-2"}`}
     >
       <div
         className={`flex h-full w-full translate-x-0 flex-col gap-2 transition-transform delay-100  ${isOpen ? "" : "right-0 w-[300px] translate-x-full"}`}
@@ -38,7 +49,7 @@ export function ChatDetail({ isOpen, character, openCandy, setCandyOpen, likeCou
             desc: character.description,
             img: character.image,
             name: character.name,
-            messages: character.messages
+            messages: character.messages,
           }}
           creator="VectorChat"
           numChats={character._count.messages}
@@ -52,7 +63,7 @@ export function ChatDetail({ isOpen, character, openCandy, setCandyOpen, likeCou
           setShareModal={setShareModal}
         />
 
-        {!isMobile && <ChatHistory messages={character.messages}/>}
+        <CandiesCard />
 
         <Recommended
           characters={[

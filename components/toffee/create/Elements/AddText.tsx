@@ -64,7 +64,7 @@ const AddText = ({ texts, setTexts }: TextProps) => {
   return (
     <div className="flex flex-col w-full gap-6">
       <div className='flex flex-row w-full'>
-        <span className="text-base font-semibold  text-white">Add your text</span>
+        <span className="text-base font-semibold leading-normal text-white">Add your text</span>
         <Plus className='h-6 w-6 text-text-tertiary ml-auto cursor-pointer' onClick={handleAddText} />
       </div>
       {texts && texts.map((text, index) => (

@@ -20,4 +20,8 @@
   [data-in-range="false"] {
     background-color: #242428 !important;
   }
+  [data-slot="filler"] {
+    left: 1.5%;
+    bottom: 2px;
+  }
 }

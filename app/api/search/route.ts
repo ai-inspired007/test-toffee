@@ -2,7 +2,7 @@
 
 import prismadb from "@/lib/prismadb";
 import { auth } from "auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import qs from "qs";
 export const maxDuration = 30;
 const cosinesim = (A: number[], B: number[]) => {
@@ -21,15 +21,14 @@ const cosinesim = (A: number[], B: number[]) => {
   return (mA === 0 || mB === 0) ? 1 : dotproduct / (mA * mB);
 };
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
-    const rawParams = req.url.split("?")[1];
-    const searchParams = qs.parse(rawParams);
+    const searchParams = req.nextUrl.searchParams;
     const session = await auth();
     const user = session?.user;
-    const tag = searchParams.tag ? (searchParams.tag as string) : "";
-    const query = searchParams.query ? (searchParams.query as string) : "";
-    console.log(searchParams)
+    const tag = searchParams.get("tag") || "";
+    const query = searchParams.get("query") || "";
+    console.log(Object.fromEntries(searchParams));
 
     let result = {};
     
@@ -78,13 +77,6 @@ export async function GET(req: Request) {
             createdAt: true,
             updatedAt: true,
             categoryId: true,
-            // messages: {
-            //   select: {
-            //     id: true,
-            //     userId: true,
-            //     characterId: true
-            //   }
-            // },
             characterKnowledgePacks: true,
             _count: {
               select: {
@@ -92,13 +84,6 @@ export async function GET(req: Request) {
                 messages: true
               },
             },
-            // knowledgePacks: {
-            //   select: {
-            //     _count: {
-            //       select: { id: true },
-            //     },
-            //   }
-            // }
           },
         });
       const scoredCharacters = characters.map((item) => ({

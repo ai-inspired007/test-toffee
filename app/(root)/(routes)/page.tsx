@@ -34,6 +34,7 @@ const Discover: React.FC = async () => {
       greeting: true,
       seed: true,
       vectors: true,
+      voiceId: true,
       shared: true,
       private: true,
       createdAt: true,
@@ -59,17 +60,17 @@ const Discover: React.FC = async () => {
       characters: true
     }
   });
+  const voiceList = await prismadb.voice.findMany({
+
+  });
   const tags = await prismadb.tag.findMany({
-    select: {
-      id: true,
-      categoryId: true,
-      name: true,
+    include: {
       characters: true
     }
   })
 
   return (
-    <DiscoverPage categories={categories} characters={characters} tags={tags} />
+    <DiscoverPage categories={categories} characters={characters} tags={tags} voiceList={voiceList} />
   )
 }
 

@@ -1,68 +1,62 @@
-import { Character, KnowledgePack } from "@prisma/client";
+import { Character, KnowledgePack, Voice } from "@prisma/client";
 import { Empty } from "../../icons/Empty";
 import { useRouter } from "next/navigation";
 import CharacterCard from "../../CharacterCard";
 import CandyCard from "../../CandyCard";
 import VoiceCard from "../../VoiceCard";
-import Carousel from "../../../ui/Carousel";
+import Carousel from "../../../ui/carousel";
 import { useEffect, useState } from "react";
+import VoiceCardDetailPopUp from "../../VoiceCardDetailPopUp";
+import Modal from "@/components/ui/Modal";
 
-type VoiceType = {
-  name: string;
-  description: string;
-};
 
 const generateGradientBackgrounds = (colors: string[], length: number): string[] => {
-  const shuffledColors = [...colors].sort(() => 0.5 - Math.random());
-  const selectedColors = shuffledColors.slice(0, length);
-  return selectedColors.map(color => `linear-gradient(to right, ${color}4D 0%, ${color}00 15%)`);
-};
+  return [...Array(length)].map((_, index) => {
+    const color = colors[index % 12];
+    return `linear-gradient(to right, ${color}4D 0%, ${color}00 35.07%)`;
+  });
+}
 
 const All = ({
   characters,
   candies,
-  type
+  type,
+  voiceList,
 }: {
-    characters: Partial<Character & { _count: { messages: number } }>[],
-    candies: Partial<KnowledgePack>[],
-    type: string
+  characters: Partial<Character & { _count: { messages: number } }>[],
+  candies: Partial<KnowledgePack>[],
+  type: string,
+  voiceList: Partial<Voice>[]
 }) => {
+
   const router = useRouter();
-  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
-  const colors = ['#FF5733', '#33FF57', '#5733FF', '#FF33A1', '#33FFF5', '#FF33C1', '#57FF33', '#3375FF', '#FFFF33', '#33BFFF'];
+  const colors = ['#F7604C', '#BCB8C5', '#CDF74C', '#6E3FF3', '#4CF788', '#F7A84C', '#E73FF3', '#EDACE2', '#F7E34C', '#F74C5D', '#3F7BF3', '#B64D8C'];
   const [gradientBackgrounds, setGradientBackgrounds] = useState<string[]>([]);
 
   useEffect(() => {
-    if (gradientBackgrounds.length === 0) {
-      setGradientBackgrounds(generateGradientBackgrounds(colors, 4));
+    if (voiceList.length > 0 && gradientBackgrounds.length === 0) {
+      setGradientBackgrounds(generateGradientBackgrounds(colors, voiceList.length));
     }
-  }, [colors, gradientBackgrounds.length]);
+  }, [colors, voiceList.length, gradientBackgrounds.length]);
 
-  if (gradientBackgrounds.length === 0) {
-    return null;
-  }
+  const [currentPlayingIndex, setCurrentPlayingIndex] = useState<number | null>(null);
+  const [selectedVoice, setSelectedVoice] = useState<Partial<Voice> | null>(null);
+  const [gradientOriginColor, setGradientOriginColor] = useState<string | null>(null);
 
-  const voicelist: VoiceType[] = [
-    {
-      name: "Zero Two",
-      description: "I'm Zero Two from Darling in the Franxx",
-    },
-    {
-      name: "Zero Two",
-      description: "I'm Zero Two from Darling in the Franxx",
-    },
-    {
-      name: "Zero Two",
-      description: "I'm Zero Two from Darling in the Franxx",
-    },
-    {
-      name: "Zero Two",
-      description: "I'm Zero Two from Darling in the Franxx",
-    },
-  ];
   const togglePlayPause = (index: number) => {
-    setPlayingIndex(index === playingIndex ? null : index);
+    setCurrentPlayingIndex(prevIndex => prevIndex === index ? null : index);
   };
+
+  const handleShowDetails = (voice: Partial<Voice>, originColor: string) => {
+    setSelectedVoice(voice);
+    setGradientOriginColor(originColor);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedVoice(null);
+    setGradientOriginColor(null);
+  };
+
   return (
     <div className="flex flex-col gap-8">
       <div className="w-full overflow-hidden">
@@ -72,25 +66,36 @@ const All = ({
       </div>
       <div className="w-full overflow-hidden">
         <Carousel title="Candies" className="flex text-white font-sans text-lg font-semibold leading-7">
-          {candies?.map((candy, index)=>(
-            <CandyCard candy={candy} key={index}/>
+          {candies?.map((candy, index) => (
+            <CandyCard candy={candy} key={index} />
           ))}
         </Carousel>
       </div>
       <div className="w-full overflow-hidden">
         <Carousel title="Voices" className="flex text-white font-sans text-lg font-semibold leading-7">
-          {voicelist?.map((voice, index) => (
+          {voiceList?.map((voice, index) => (
             <VoiceCard
               key={index}
               voice={voice}
               index={index}
               togglePlayPause={togglePlayPause}
-              isPlaying={index === playingIndex}
+              isPlaying={index === currentPlayingIndex}
               gradientColor={gradientBackgrounds[index]}
+              onShowDetails={handleShowDetails}
             />
           ))}
         </Carousel>
       </div>
+      <Modal onClose={handleCloseDetails} isOpen={selectedVoice !== null}>
+        {selectedVoice && gradientOriginColor && (
+          <VoiceCardDetailPopUp
+            voice={selectedVoice}
+            originColor={gradientOriginColor}
+            onClose={handleCloseDetails}
+            characters={characters}
+          />
+        )}
+      </Modal>
     </div>
   )
 }

@@ -10,9 +10,9 @@ const GeneratingVoice = () => {
             width={0}
             height={0}
             alt="rule"
-            className="h-[140px] w-[140px]"
+            className="h-[100px] w-[100px]"
           />
-          <span className=" text-[32px] font-semibold leading-10 text-white">
+          <span className="mt-4 text-[32px] font-semibold leading-10 text-white">
             Generating voice
           </span>
           <span className=" text-[14px] font-normal leading-[22px] text-text-tertiary">

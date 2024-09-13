@@ -1,6 +1,6 @@
 import prismadb from "@/lib/prismadb";
 import { auth } from "auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import qs from "qs";
 import { Character } from "@prisma/client";
 export const maxDuration = 30;
@@ -21,13 +21,12 @@ const cosinesim = (A: number[], B: number[]) => {
   return mA === 0 || mB === 0 ? 1 : dotproduct / (mA * mB);
 };
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
-    const rawParams = req.url.split("?")[1];
-    const searchParams = qs.parse(rawParams);
+    const searchParams = req.nextUrl.searchParams;
     const session = await auth();
     const user = session?.user;
-    const name = searchParams.params ? (searchParams.params as string) : "";
+    const name = searchParams.get("params") || "";
     const characters = await prismadb.character.findMany({
       where: {
         AND: {

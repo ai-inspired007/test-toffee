@@ -16,9 +16,10 @@ import { CandyFile } from "../Candy";
 import { MdiInformationOutline } from "../../icons/InformationLine";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
-import Tooltip from "../../../ui/Tooltip";
+import Tooltip from "../../../ui/tooltip";
 import { getFileIcon } from "./UploadFiles";
 import { validAudioInputTypes } from "@/lib/upload/util";
+import { VoiceType } from "@/app/(create)/create/voice/page";
 
 const VoiceUploadModal = ({
   isModal,
@@ -27,6 +28,7 @@ const VoiceUploadModal = ({
   setModal,
   setFiles,
   setIsGeneratingVoice,
+  setUploadedVoice,
 }: {
   isModal: boolean;
   files: CandyFile[] | null;
@@ -34,13 +36,13 @@ const VoiceUploadModal = ({
   setModal: Dispatch<React.SetStateAction<boolean>>;
   setFiles: Dispatch<SetStateAction<CandyFile[] | null>>;
   setIsGeneratingVoice: Dispatch<React.SetStateAction<boolean>>;
+  setUploadedVoice: Dispatch<React.SetStateAction<VoiceType | undefined>>;
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [editingFileIndex, setEditingFileIndex] = useState<number | null>(null);
   const [newFileName, setNewFileName] = useState<string>("");
   const [addings, setAddings] = useState<CandyFile[] | null>(null);
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.files);
     const newFiles = event.target.files;
     if (newFiles) {
       const uploadedFiles = Array.from(newFiles).map((file) => ({
@@ -57,10 +59,61 @@ const VoiceUploadModal = ({
 
   const handleCreateVoice = () => {
     setIsGeneratingVoice(true);
-    setTimeout(() => {
-      setStep(2);
-      setIsGeneratingVoice(false);
-    }, 2000);
+    const uploadedFile = addings?.[0];
+    if (uploadedFile) {
+      const labels = {
+        mode: "uploaded",
+      };
+      const formData = new FormData();
+      formData.append("name", uploadedFile?.name?.split(".")?.[0]);
+      formData.append("description", uploadedFile?.name);
+      formData.append("labels", JSON.stringify(labels));
+      if (uploadedFile?.file) {
+        formData.append("files", uploadedFile.file);
+      }
+
+      fetch("/api/voice", {
+        method: "POST",
+        body: formData,
+      })
+        .then((res1) => res1.json())
+        .then((data1: any) => {
+          if (data1.voiceDetail.voiceId) {
+            console.log("Voice ID:", data1.voiceDetail.voiceId);
+            const voiceData: VoiceType = {
+              name: data1.voiceDetail.name,
+              voiceId: data1.voiceDetail.voiceId,
+              description: data1.voiceDetail.description,
+              audioUrl: data1.voiceDetail.preview_url,
+              itemTypeId: "",
+            };
+            setUploadedVoice(voiceData);
+            setTimeout(() => {
+              setStep(2);
+              setIsGeneratingVoice(false);
+            }, 500);
+          } else {
+            console.log(data1);
+            toast.error(data1.error || "Error generating voice", {
+              theme: "colored",
+              hideProgressBar: true,
+              autoClose: 1500,
+            });
+            setStep(0);
+            setIsGeneratingVoice(false);
+          }
+        })
+        .catch((err1: any) => {
+          console.log(err1);
+          toast.error(`Error generating voice: ${err1}`, {
+            theme: "colored",
+            hideProgressBar: true,
+            autoClose: 1500,
+          });
+          setStep(0);
+          setIsGeneratingVoice(false);
+        });
+    }
   };
 
   const handleFileInput = () => {
@@ -90,10 +143,6 @@ const VoiceUploadModal = ({
       fileInputRef.current.click();
     }
   };
-  const handleEdit = (index: number, currentName: string) => {
-    setEditingFileIndex(index);
-    setNewFileName(currentName);
-  };
 
   const handleEditConfirm = (index: number) => {
     if (files) {
@@ -102,13 +151,6 @@ const VoiceUploadModal = ({
       );
       setFiles(updatedFiles);
       setEditingFileIndex(null);
-    }
-  };
-
-  const handleDelete = (index: number) => {
-    if (files) {
-      const updatedFiles = files.filter((_, idx) => idx !== index);
-      setFiles(updatedFiles.length > 0 ? updatedFiles : null);
     }
   };
 
@@ -174,10 +216,10 @@ const VoiceUploadModal = ({
                   />
                 ) : (
                   <>
-                    <RiFileEditLine
+                    {/* <RiFileEditLine
                       className="h-6 w-6 cursor-pointer"
                       onClick={() => handleEdit(index, file.name)}
-                    />
+                    /> */}
                     <RiDeleteBin6Line
                       className="h-6 w-6 cursor-pointer"
                       onClick={() => handleRemoving(index)}

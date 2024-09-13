@@ -284,8 +284,8 @@ const GoogleSignInInfo: React.FC = () => (
       <Google />
     </div>
     <div className="flex flex-col w-[213px] h-[42px] gap-2 left-20 top-5 absolute">
-      <span className="font-inter font-medium text-sm leading-[18px] text-text-sub">You signed with Google</span>
-      <span className="font-inter font-normal text-xs text-text-tertiary">You can’t change your password here</span>
+      <span className=" font-medium text-sm leading-[18px] text-text-sub">You signed with Google</span>
+      <span className=" font-normal text-xs text-text-tertiary">You can’t change your password here</span>
     </div>
   </div>
 );
@@ -344,7 +344,7 @@ const PasswordChangeForm: React.FC<PasswordChangeFormProps> = ({
       className={`flex w-[161px] h-[36px] rounded-[20px] border px-4 py-[6px] gap-1 bg-white items-center justify-center ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'}`}
       onClick={!isLoading ? onChangePassword : undefined}
     >
-      <span className="font-inter font-medium text-sm leading-[18px] text-black">Change password</span>
+      <span className=" font-medium text-sm leading-[18px] text-black">Change password</span>
     </div>
   </>
 );
@@ -367,16 +367,16 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({
 }) => (
   <div className={`w-full border rounded-[8px] h-20 relative ${mta ? "border-white/5" : "bg-bg-3 border-white/5"}`}>
     <div className="flex flex-col gap-2 absolute top-4 left-6 bottom-5">
-      <span className="font-inter font-medium text-base leading-5 text-text-sub">Multi-factor authentication</span>
+      <span className=" font-medium text-base leading-5 text-text-sub">Multi-factor authentication</span>
       {mta || _2faStatus === "enabled" ? (
-        <span className="font-inter font-normal text-xs text-[#38C793]">Connected</span>
+        <span className=" font-normal text-xs text-[#38C793]">Connected</span>
       ) : (
-        <span className="font-inter font-normal text-xs text-[#777777]">Disconnected</span>
+        <span className=" font-normal text-xs text-[#777777]">Disconnected</span>
       )}
     </div>
     <div className={`flex absolute items-center justify-center top-[22px] right-6 rounded-[20px] border px-5 py-[6px] gap-1 ${mta ? "bg-bg-3 border-white/20" : "bg-white border-white/20"}`}>
       <button
-        className={`font-inter font-medium text-sm leading-[18px] ${mta ? "text-text-sub" : "text-black"}`}
+        className={` font-medium text-sm leading-[18px] ${mta ? "text-text-sub" : "text-black"}`}
         onClick={!mta || _2faStatus === "disabled" ? connectMfa : disconnectMfa}
         disabled={isLoading}
       >
@@ -400,25 +400,25 @@ type TwoFAModalProps = {
 const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose, qrData, qrSecret, userToken, setUserToken, verifyMfa, isLoading }) => (
   <Modal isOpen={isOpen} onClose={onClose}>
     <div className="bg-bg-3 rounded-xl p-6 flex flex-col sm:max-w-[600px]">
-      <h1 className="text-white font-inter font-semibold text-[20px] mt-2">Enable two-factor authentication</h1>
-      <p className="text-text-additional font-inter text-sm mt-1">
+      <h1 className="text-white  font-semibold text-[20px] mt-2">Enable two-factor authentication</h1>
+      <p className="text-text-additional  text-sm mt-1">
         Use a phone app like <span className="underline">1Password</span>, <span className="underline">Authy</span>,{" "}
         <span className="underline">Google authenticator</span>, or etc. to get 2FA codes when prompted during sign-in
       </p>
       <div className="flex flex-row mt-6">
         {qrData && <img src={qrData} alt="2FA QR Code" />}
         <div className="flex flex-col ml-6">
-          <h2 className="text-white font-inter font-medium">SCAN QR CODE</h2>
-          <p className="text-text-additional font-inter text-sm mt-1">
+          <h2 className="text-white  font-medium">SCAN QR CODE</h2>
+          <p className="text-text-additional  text-sm mt-1">
             Use an authenticator app from your phone to scan. If you are unable to scan,{" "}
             <span className="underline">enter this text code instead</span>.
           </p>
-          <h2 className="text-white font-inter font-medium mt-4">CODE 2FA (MANUAL ENTRY)</h2>
+          <h2 className="text-white  font-medium mt-4">CODE 2FA (MANUAL ENTRY)</h2>
           <span className="text-text-sub bg-[#777777] p-1 text-center mt-2">{qrSecret}</span>
         </div>
       </div>
       <div className="mt-6 flex flex-col">
-        <h2 className="text-white font-inter font-medium">Verify the code from the app</h2>
+        <h2 className="text-white  font-medium">Verify the code from the app</h2>
         <input
           type="text"
           className="rounded-md text-white py-1 px-3 border border-solid text-left bg-transparent border-white/10 mt-1 w-fit"

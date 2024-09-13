@@ -104,6 +104,15 @@ export const authOptions: AuthOptions = {
             profile_image: user.image
           }
         })
+        await prismadb.chatSetting.create({
+          data: {
+            userId: user.id,
+            voiceId: "",
+            themeId: "",
+            prompt: "",
+            chat_model: "gpt-4o"
+          }
+        });
         return true
       } else {
         return "/signup"

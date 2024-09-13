@@ -1,17 +1,16 @@
 import prismadb from "@/lib/prismadb";
 import { auth } from "auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import qs from "qs";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
-    const rawParams = req.url.split("?")[1];
-    const searchParams = qs.parse(rawParams);
+    const searchParams = req.nextUrl.searchParams;
     const session = await auth();
     const user = session?.user;
 
-    const query = searchParams.query ? (searchParams.query as string) : "";
-    console.log(searchParams)
+    const query = searchParams.get("query") ? (searchParams.get("query") as string) : "";
+    console.log(Object.fromEntries(searchParams))
     
     const total = await prismadb.category.count({
       where: {

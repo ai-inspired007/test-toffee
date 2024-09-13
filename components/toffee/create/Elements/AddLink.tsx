@@ -7,7 +7,7 @@ import { X } from 'lucide-react';
 import { RiLinkM } from '../../icons/Fork';
 import Modal from "../../../ui/Modal";
 import axios from 'axios';
-import Tooltip from '../../../ui/Tooltip';
+import Tooltip from '../../../ui/tooltip';
 import Image from 'next/image';
 export interface LinkProps {
   links: CandyLink[] | null;
@@ -116,9 +116,9 @@ const AddLink = ({ links, setLinks }: LinkProps) => {
   }, [tempUrl]);
 
   return (
-    <div className="flex flex-col w-full gap-8">
+    <div className="flex flex-col w-full gap-[24px]">
       <div className='flex flex-row w-full'>
-        <span className="text-sm font-semibold  text-white">Add your link</span>
+        <span className="text-base font-semibold text-white">Add links</span>
         <Plus className='h-6 w-6 text-text-tertiary ml-auto cursor-pointer' onClick={handleAddLink} />
       </div>
       {links && links.map((link, index) => (

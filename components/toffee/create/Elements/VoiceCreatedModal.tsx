@@ -1,8 +1,6 @@
-import { Dispatch } from "react";
 import Modal from "../../../ui/Modal";
-import { X } from "lucide-react";
-import Image from "next/image";
 import { RiVoiceprintLine } from "../../icons/VoicePrint";
+import { useRouter } from "next/navigation";
 
 const VoiceCreatedModal = ({
   isModal,
@@ -11,8 +9,10 @@ const VoiceCreatedModal = ({
   isModal: boolean;
   handleCancel: Function;
 }) => {
+  const router = useRouter();
+
   const handleTryit = () => {
-    handleCancel();
+    router.push("/create");
   };
 
   return (

@@ -39,7 +39,8 @@ export async function POST(req: Request) {
       tags,
       addons,
       utility,
-      storytelling
+      storytelling,
+      voiceId
     } = body;
     if (!user || !user.id) {
       return new NextResponse("User not logged in.", { status: 401 });
@@ -93,6 +94,7 @@ export async function POST(req: Request) {
         description,
         instructions,
         seed,
+        voiceId,
         greeting: greeting || `Hi, I'm ${name}. What do you want to chat about today?`,
         utility: utility ? { create: { ...utility } } : undefined,
         storytelling: storytelling ? { create: { ...storytelling } } : undefined,

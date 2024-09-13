@@ -18,10 +18,10 @@ const genderOptions: { type: GenderType, image: string }[] = [
 
 const SelectGender: FC<SelectGenderProps> = ({ gender, setGender, advanceFunction, previousFunction }) => {
   return (
-    <div className="flex flex-col items-center justify-center sm:gap-8 gap-6 mt-4">
+    <div className="flex flex-col items-center justify-center gap-8 absolute top-[22.17%] pb-6">
       <div className = "flex flex-col gap-4 items-center text-center md:w-[594px]">
-        <h2 className="sm:text-[32px] text-[20px] text-center font-semibold text-white leading-10 tracking-[0.005rem]">What is the gender of your character?</h2>
-        <p className="sm:text-sm text-[13px] text-center text-text-tertiary leading-[22px]">{"Please select your character's gender. It will affect their, tone of speech, appearance, and voice."}</p>
+        <h2 className="sm:text-[32px] text-[20px] text-center font-semibold text-white leading-10 tracking-[0.005rem] px-6">What is the gender of your character?</h2>
+        <p className="sm:text-sm text-[13px] text-center text-text-tertiary leading-[22px] px-6">Please select your character's gender. It will affect their, tone of speech, appearance, and voice.</p>
       </div>
       <div className="flex flex-wrap gap-1 sm:gap-4 justify-center mt-4">
         {genderOptions.map((option) => (

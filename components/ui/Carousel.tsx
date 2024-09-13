@@ -1,6 +1,12 @@
-import React, { useRef, forwardRef, useImperativeHandle, useState, useEffect } from 'react';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import React, {
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  useState,
+  useEffect,
+} from "react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 type DataProps = {
   title: string;
@@ -29,30 +35,31 @@ const Carousel = forwardRef<
   useImperativeHandle(ref, () => ({
     scrollToPrev() {
       if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+        scrollContainerRef.current.scrollBy({ left: -300, behavior: "smooth" });
       }
     },
     scrollToNext() {
       if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+        scrollContainerRef.current.scrollBy({ left: 300, behavior: "smooth" });
       }
-    }
+    },
   }));
 
   const handlePrevClick = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ left: -300, behavior: "smooth" });
     }
   };
 
   const handleNextClick = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ left: 300, behavior: "smooth" });
     }
   };
 
   const handleScroll = () => {
-    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current!;
+    const { scrollLeft, scrollWidth, clientWidth } =
+      scrollContainerRef.current!;
     setAtStart(scrollLeft === 0);
     setAtEnd(scrollLeft + clientWidth === scrollWidth);
   };
@@ -69,31 +76,33 @@ const Carousel = forwardRef<
 
   const handleShowAllClick = () => {
     setShowAll(!showAll);
-  }
+  };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className=" flex flex-col gap-4">
       <div className="flex flex-row justify-between text-white">
-        <Link href={link ? link : "#"} className={className}>{title}</Link>
+        <Link href={link ? link : "#"} className={className}>
+          {title}
+        </Link>
         {isScrollable && (
-          <div className="flex flex-row gap-2 items-center pr-6">
+          <div className="flex flex-row items-center gap-2 pr-6">
             <span
-              className="text-sm font-[500] text-[#BC7F44] cursor-pointer"
+              className="text-sm font-[500] text-[#dddddd] cursor-pointer"
               onClick={handleShowAllClick}
             >
-              {showAll ? 'Show Less' : 'Show All'}
+              {showAll ? "Show Less" : "Show All"}
             </span>
             {!showAll && !isMobileScreen() && (
               <div className="flex flex-row gap-1">
                 <span
-                  className={`cursor-pointer ${atStart ? 'text-gray-500' : ''}`}
+                  className={`cursor-pointer ${atStart ? "text-gray-500" : ""}`}
                   onClick={handlePrevClick}
                   aria-disabled={atStart}
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </span>
                 <span
-                  className={`cursor-pointer ${atEnd ? 'text-gray-500' : ''}`}
+                  className={`cursor-pointer ${atEnd ? "text-gray-500" : ""}`}
                   onClick={handleNextClick}
                   aria-disabled={atEnd}
                 >
@@ -105,10 +114,13 @@ const Carousel = forwardRef<
         )}
       </div>
       <div
-        className={`${showAll
-            ? ' flex flex-wrap flex-row'
-            : row || col ?`grid ${row ? `grid-flow-col grid-rows-${row}` : ''} ${col ? `grid-cols-${col}` : ''}`:"flex flex-row"
-          } ${!showAll && 'no-scrollbar overflow-auto'} sm:gap-4 gap-2 `}
+        className={`${
+          showAll
+            ? " flex flex-row flex-wrap"
+            : row || col
+              ? `grid ${row ? `grid-flow-col grid-rows-${row}` : ""} ${col ? `grid-cols-${col}` : ""}`
+              : "flex flex-row"
+        } ${!showAll && "no-scrollbar overflow-auto"} gap-2 `}
         ref={scrollContainerRef}
         onScroll={handleScroll}
       >

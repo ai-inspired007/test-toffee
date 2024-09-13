@@ -7,13 +7,19 @@ export interface AutocompleteItem {
 }
 interface SearchBoxProps {
   query: string;
-  setQuery: (query: string)=>void;
-  autocompleteItems: AutocompleteItem[]
+  setQuery: (query: string) => void;
+  autocompleteItems: AutocompleteItem[];
   except?: string;
 }
 
-export const SearchBox = ({query, setQuery, autocompleteItems, except}: SearchBoxProps) => {
-  const [autocompleteVisible, setAutocompleteVisible] = useState<boolean>(false);
+export const SearchBox = ({
+  query,
+  setQuery,
+  autocompleteItems,
+  except,
+}: SearchBoxProps) => {
+  const [autocompleteVisible, setAutocompleteVisible] =
+    useState<boolean>(false);
   const [autocompleteIndex, setAutocompleteIndex] = useState<number>(-1);
   const handleQuery = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -25,7 +31,7 @@ export const SearchBox = ({query, setQuery, autocompleteItems, except}: SearchBo
 
     if (e.key === "ArrowDown") {
       setAutocompleteIndex((prevIndex) =>
-        Math.min(prevIndex + 1, dataToFilter.length - 1)
+        Math.min(prevIndex + 1, dataToFilter.length - 1),
       );
     } else if (e.key === "ArrowUp") {
       setAutocompleteIndex((prevIndex) => Math.max(prevIndex - 1, 0));
@@ -43,7 +49,7 @@ export const SearchBox = ({query, setQuery, autocompleteItems, except}: SearchBo
       setQuery(
         autocompleteIndex >= 0
           ? dataToFilter[autocompleteIndex]?.name || except
-          : except
+          : except,
       );
       setAutocompleteVisible(false);
       setAutocompleteIndex(-1);
@@ -66,7 +72,9 @@ export const SearchBox = ({query, setQuery, autocompleteItems, except}: SearchBo
     if (!query) return "";
     if (autocompleteIndex >= 0 && autocompleteIndex < dataToFilter.length) {
       const highlightedItem = dataToFilter[autocompleteIndex];
-      if (highlightedItem.name.toLowerCase().indexOf(query.toLowerCase()) === 0) {
+      if (
+        highlightedItem.name.toLowerCase().indexOf(query.toLowerCase()) === 0
+      ) {
         return highlightedItem.name;
       }
     } else if (except?.toLowerCase().indexOf(query.toLowerCase()) === 0) {
@@ -75,8 +83,8 @@ export const SearchBox = ({query, setQuery, autocompleteItems, except}: SearchBo
     return "";
   };
   return (
-    <label className="sticky top-0 z-50 w-full rounded-t-lg bg-opacity-60 py-5 text-gray-400 backdrop-blur-lg backdrop-filter focus-within:text-gray-600 flex items-center border-0 border-b-2 border-[#BC7F44] ">
-      <SearchLineIcon className="h-6 w-6 pointer-events-none absolute left-6 text-[#B1B1B1]" />
+    <label className="sticky top-0 z-50 flex w-full items-center ">
+      <SearchLineIcon className="pointer-events-none absolute inset-y-0 -top-0.5 left-0  h-6 w-6 shrink-0 text-toffee-text-additional" />
       <input
         placeholder="What are you looking for?"
         value={query}
@@ -85,28 +93,30 @@ export const SearchBox = ({query, setQuery, autocompleteItems, except}: SearchBo
         onBlur={handleBlur}
         type="text"
         spellCheck="false"
-        className="relative h-9 bg-transparent text-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 block w-full appearance-none rounded-none pl-14 text-white z-10"
+        className="relative z-10 ml-2 block w-full max-w-xs rounded-none bg-transparent pl-6 text-sm text-white transition-colors placeholder:text-toffee-text-tertiary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:max-w-sm"
       />
       {autocompleteVisible && query && (
-        <div className="absolute flex items-center pointer-events-none pl-14 py-5 top-0 z-0">
-          <span className="text-muted-foreground text-sm h-9 items-center flex ">
-            {query}{getPlaceholderText().slice(query.length)}
+        <div className="pointer-events-none absolute top-0 z-0 flex items-center py-5 pl-14">
+          <span className="flex h-9 items-center text-sm text-muted-foreground ">
+            {/* {query} */}
+            {getPlaceholderText().slice(query.length)}
           </span>
         </div>
       )}
       {autocompleteVisible && query && (
-        <div className="absolute bg-bg-3 rounded-md text-white top-14 flex flex-col left-10 z-10">
+        <div className="absolute left-6 top-14 z-10 ml-2 flex flex-col rounded-md bg-bg-3 text-white">
           {autocompleteItems.slice(0, 10).map((item, index) => (
             <div
               key={item.id}
-              className={`cursor-pointer hover:bg-white/10 px-4 py-2 text-sm rounded-md ${autocompleteIndex === index ? "bg-white/10" : ""}`}
+              className={`cursor-pointer rounded-md px-4 py-2 text-sm hover:bg-white/10 ${autocompleteIndex === index ? "bg-white/10" : ""}`}
               onClick={() => handleAutocompleteClick(item)}
             >
-              {item.name} <span className="text-xs text-gray-400">({item.type})</span>
+              {item.name}{" "}
+              <span className="text-xs text-gray-400">({item.type})</span>
             </div>
           ))}
         </div>
       )}
     </label>
-  )
-}
+  );
+};

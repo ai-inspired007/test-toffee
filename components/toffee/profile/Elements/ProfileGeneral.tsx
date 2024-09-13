@@ -107,7 +107,7 @@ const ProfileGeneral: React.FC<ProfileGeneralProps> = ({
             disabled={isGmail}
             onChange={(e) => setEditEmail(e.target.value)}
           />
-          {errorForEmail && <span className="text-[#DF1C41] font-inter text-xs">{errorForEmail}</span>}
+          {errorForEmail && <span className="text-[#DF1C41]  text-xs">{errorForEmail}</span>}
         </div>
         <SelectSharing options={sharingOptions} selectedOption={editShared} setSelectedOption={setEditShared} />
       </Section>
@@ -132,9 +132,9 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({ editAvatar, setEditAvatar
       <input type="file" id="avatar-input" onChange={e => onFileChange(e, setEditAvatar, setAvatarFile)} accept={validImageInputTypes.join(", ")} className="hidden" />
     </label>
     <div className="flex flex-col gap-1">
-      <span className="text-center font-inter text-sm font-medium leading-[18px] text-white">Click on image to replace</span>
-      <span className="text-center font-inter text-xs font-normal text-[#777777]">Recommended size 400x400. PNG or JPEG</span>
-      <button className="text-center font-inter text-xs font-normal text-[#DF1C41]" onClick={() => setEditAvatar(null)}>Delete avatar</button>
+      <span className="text-center  text-sm font-medium leading-[18px] text-white">Click on image to replace</span>
+      <span className="text-center  text-xs font-normal text-[#777777]">Recommended size 400x400. PNG or JPEG</span>
+      <button className="text-center  text-xs font-normal text-[#DF1C41]" onClick={() => setEditAvatar(null)}>Delete avatar</button>
     </div>
   </Section>
 );
@@ -157,13 +157,13 @@ const BannerSection: React.FC<BannerSectionProps> = ({ editBanner, setEditBanner
       <div className="absolute top-0 w-full h-[186px] rounded-2xl flex justify-center">
         <label htmlFor="banner-input" className="w-full cursor-pointer rounded-2xl">
           <div className="flex flex-col w-full h-[140px] absolute">
-            <span className="mt-10 text-center font-inter text-base font-medium leading-[20px] text-[#DDDDDD]">Add your quick profile banner with toffee+</span>
-            <span className="mt-2 text-center font-inter text-sm font-normal leading-[18px] text-[#777777]">Looks like this author don’t have any characters yet</span>
+            <span className="mt-10 text-center  text-base font-medium leading-[20px] text-[#DDDDDD]">Add your quick profile banner with toffee+</span>
+            <span className="mt-2 text-center  text-sm font-normal leading-[18px] text-[#777777]">Looks like this author don’t have any characters yet</span>
           </div>
           <input type="file" id="banner-input" onChange={e => onFileChange(e, setEditBanner, setBannerFile)} accept={validImageInputTypes.join(", ")} className="hidden" />
         </label>
         <div className="flex absolute items-center justify-center rounded-[20px] h-[36px] px-4 py-[6px] top-[110px] bg-white">
-          <span className="text-center font-inter text-sm font-medium leading-[18px] text-black">Upgrade to toffee+</span>
+          <span className="text-center  text-sm font-medium leading-[18px] text-black">Upgrade to toffee+</span>
         </div>
       </div>
     )}

@@ -20,9 +20,11 @@ model Tag {
   id             String             @id @default(uuid())
   name           String
   categoryId     String
+  type           TagType
   category       Category           @relation(fields: [categoryId], references: [id])
   knowledgePacks KnowledgePackTag[]
   characters     CharacterTag[]
+  voices         VoiceTag[]
 
   @@index([categoryId])
 }
@@ -47,6 +49,18 @@ model KnowledgePackTag {
 
   @@unique([knowledgePackId, tagId])
   @@index([knowledgePackId])
+  @@index([tagId])
+}
+
+model VoiceTag {
+  id      String @id @default(uuid())
+  voiceId String
+  tagId   String
+  voice   Voice  @relation(fields: [voiceId], references: [id])
+  tag     Tag    @relation(fields: [tagId], references: [id])
+
+  @@unique([voiceId, tagId])
+  @@index([voiceId])
   @@index([tagId])
 }
 
@@ -81,7 +95,9 @@ model Character {
   updatedAt               DateTime                 @updatedAt
   categoryId              String
   category                Category                 @relation(fields: [categoryId], references: [id])
-  user                    UserSettings             @relation(fields: [userId], references: [userId])
+  voiceId                 String?
+  voice                   Voice?                    @relation(fields: [voiceId], references: [id])
+  user                    UserSettings?            @relation(fields: [userId], references: [userId])
   tags                    CharacterTag[]
   messages                Message[]
   subscriptions           Subscription[]
@@ -245,12 +261,49 @@ model KnowledgeChat {
   @@index([knowledgePackId])
 }
 
+model Voice {
+  id           String        @id @default(uuid())
+  userId       String
+  voiceId      String
+  pharse       String
+  name         String
+  description  String
+  preview_url  String
+  sharing      String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  tags         VoiceTag[]
+  chatSettings ChatSetting[]
+  Character    Character[]
+}
+
+model ChatSetting {
+  id         String    @id @default(uuid())
+  userId     String
+  voiceId    String
+  themeId    String
+  prompt     String
+  chat_model String
+  voice      Voice     @relation(fields: [voiceId], references: [id])
+  theme      ChatTheme @relation(fields: [themeId], references: [id])
+
+  @@index([userId])
+}
+
+model ChatTheme {
+  id           String        @id @default(uuid())
+  userId       String?
+  shared       ThemeType     @default(Private)
+  url          String
+  chatSettings ChatSetting[]
+
+  @@index([userId])
+}
+
 model UserSettings {
   userId                String               @id
   name                  String?
   email                 String?
-  following             Int?
-  follower              Int?
   linkedin              String?
   telegram              String?
   instagram             String?
@@ -265,9 +318,10 @@ model UserSettings {
   banner_image          String?
   language              String?
   shared                UserSettings_shared? @default(Private)
-  characters            Character[]
   mta                   Boolean              @default(false)
   qr_code               String               @default("")
+  characters            Character[]
+
   @@index([userId])
 }
 
@@ -313,6 +367,12 @@ enum Plan {
   PRO
 }
 
+enum TagType {
+  Character
+  KnowledgePack
+  Voice
+}
+
 enum KnowledgePackType {
   MEMORY
   DICTIONARY
@@ -327,5 +387,10 @@ enum Role {
 enum UserSettings_shared {
   Public
   Following
+  Private
+}
+
+enum ThemeType {
+  Public
   Private
 }

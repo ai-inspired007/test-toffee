@@ -131,9 +131,9 @@ export const AddCharacterImage = ({
     <>
       {!isLoading ?
         (imageData && imageType === 'generate' ?
-          <div className="flex flex-col sm:items-center h-[90vh] w-full justify-start sm:justify-center">
-            <h2 className="sm:text-[32px] text-[20px] font-inter font-bold text-white text-center">Select an image</h2>
-            <p className="mt-4 text-[13px] sm:text-sm text-text-tertiary font-inter text-center">Create profile picture with our Ai, Just describe your ideas and bring it in life</p>
+          <div className="flex flex-col items-center h-[90vh] w-full justify-center">
+            <span className="text-white  text-[32px] font-semibold mt-[37px]">Select an image</span>
+            <p className="text-text-tertiary text-sm  mt-2">Create profile picture with our Ai, Just describe your ideas and bring it in life</p>
             <div className="flex flex-col items-center">
               <Image
                 src={imageData}
@@ -155,12 +155,12 @@ export const AddCharacterImage = ({
               {"Continue"}
             </button>
           </div>
-          : <div className="flex flex-col items-center absolute top-[15.6%] p-5">
+          : <div className="flex flex-col items-center absolute top-[17.6%] mx-5">
             <div className="flex flex-col items-center text-center gap-4">
-              <h1 className="sm:text-[32px] text-[20px] font-inter font-bold text-white text-center">
-                {imageType === "upload" ? "Add your Character Image" : "Generate picture"}
+              <h1 className="text-white text-[20px] sm:text-[32px] tracking-tight leading-10 font-semibold">
+                {imageType === "upload" ? "Add your character's image" : "Generate picture"}
               </h1>
-              <p className="mt-4 text-[13px] sm:text-sm text-text-tertiary font-inter text-center">
+              <p className="text-text-tertiary text-[13px] sm:text-sm leading-snug">
                 {imageType === "upload" ? "Supported formats PNG and JPG, recommended size 260x300. 400KB max" : "Create profile picture with our Ai, Just describe your ideas and bring it in life"}
               </p>
             </div>
@@ -189,11 +189,11 @@ export const AddCharacterImage = ({
                   <span className="text-xs text-text-tertiary bg-bg-3 rounded-b-[7px] px-4 py-1">Generate your image with AI</span>
                 </div>
                 <div className="flex flex-col items-center w-full mt-12">
-                  <span className="text-white font-semibold font-inter text-xl">Choose a style</span>
-                  <p className="font-inter text-text-tertiary text-[13px] mt-2 text-center">Create profile picture with our Ai, Just describe your ideas and bring it in life</p>
-                  <div className="flex flex-row sm:gap-4 gap-1 flex-wrap max-w-6xl mx-auto w-full mt-4">
+                  <span className="text-white font-semibold tracking-[0.075rem] text-xl">Choose a style</span>
+                  <p className=" text-text-tertiary text-[13px] mt-2">Create profile picture with our Ai, Just describe your ideas and bring it in life</p>
+                  <div className="flex flex-row gap-4 flex-wrap max-w-6xl mx-auto w-full mt-8">
                     {styles.map((style, index) => (
-                      <div key={index} className={`sm:w-[176px] w-[163px] h-[198px] relative border-2 rounded-2xl overflow-hidden cursor-pointer ${style.name === selectedStyle?.name ? "border-[#BC7F44]" : "border-white/10"}`} onClick={() => handleStyleChange(style)}>
+                      <div key={index} className={`w-[176px] h-[198px] relative border-2 rounded-2xl overflow-hidden cursor-pointer ${style.name === selectedStyle?.name ? "border-[#BC7F44]" : "border-white/10"}`} onClick={() => handleStyleChange(style)}>
                         <Image src={style.url} alt={style.name} width={176} height={198} className="w-full h-full object-cover " />
                         <div className="absolute inset-0 flex items-end justify-center p-2 bg-gradient-to-t from-[#121212] via-[#12121299] to-[#12121200]">
                           <span className="text-white font-semibold">{style.name}</span>
@@ -204,7 +204,7 @@ export const AddCharacterImage = ({
                 </div>
               </>
             }
-            <div className="flex flex-col gap-[32px] mt-8 w-full items-center">
+            <div className="flex flex-col gap-[32px] mt-8 mb-40 w-full sm:w-fit item-center justify-center">
               <button
                 className="text-sm text-[#BC7F44] font-medium cursor-pointer"
                 onClick={() => {
@@ -216,30 +216,30 @@ export const AddCharacterImage = ({
               </button>
 
               <button
-                className="sm:w-[220px] w-full bg-gradient-to-r from-[#C28851] to-[#B77536] rounded-full px-4 py-1.5 text-center text-sm text-white font-medium cursor-pointer"
+                className="mt-[4px] w-full sm:w-[240px] bg-gradient-to-r from-[#C28851] to-[#B77536] rounded-full px-4 py-1.5 text-center text-sm text-white font-medium cursor-pointer"
                 onClick={imageType === "upload" ? advanceFunction : onGenerateImage}
                 disabled={isLoading}
               >
                 {"Continue"}
               </button>
             </div>
-            <Modal isOpen={leaveModal} onClose={() => false} className="w-full h-full flex items-end sm:items-center justify-center">
-              <div className="flex flex-col items-center px-8 py-6 bg-bg-2 sm:rounded-xl rounded-t-xl sm:w-[368px] w-full">
-                <div className="text-white font-inter font-medium mt-2">Are you sure that you want leave?</div>
-                <p className="text-text-additional font-inter text-[13px] w-[244px] text-center mt-2">If you leave, you lost all your results related to generated images</p>
-                <div className="flex flex-col sm:flex-row w-full mt-8 gap-2">
-                  <div className="bg-bg-3 rounded-full px=5 py-[9px] font-inter text-text-sub text-sm font-medium w-full sm:w-1/2 text-center cursor-pointer" onClick={() => setLeaveModal(false)}>Cancel</div>
-                  <div className="bg-[#DF1C41] rounded-full px=5 py-[9px] font-inter text-white text-sm font-medium w-full sm:w-1/2 text-center cursor-pointer" onClick={() => { setImageType("upload"); setLeaveModal(false); }}>Yes, leave</div>
+            <Modal isOpen={leaveModal} onClose={() => false}>
+              <div className="flex flex-col items-center px-8 py-6 bg-bg-2 rounded-xl w-[368px]">
+                <div className="text-white  font-medium mt-2">Are you sure that you want leave?</div>
+                <p className="text-text-additional  text-[13px] w-[244px] text-center mt-2">If you leave, you lost all your results related to generated images</p>
+                <div className="flex flex-row w-full mt-8 gap-2">
+                  <div className="bg-bg-3 rounded-full px=5 py-[9px]  text-text-sub text-sm font-medium w-1/2 text-center cursor-pointer" onClick={() => setLeaveModal(false)}>Cancel</div>
+                  <div className="bg-[#DF1C41] rounded-full px=5 py-[9px]  text-white text-sm font-medium w-1/2 text-center cursor-pointer" onClick={() => { setImageType("upload"); setLeaveModal(false); }}>Yes, leave</div>
                 </div>
               </div>
             </Modal>
-            <Modal isOpen={confirmModal} onClose={() => false} className="w-full h-full flex items-end sm:items-center justify-center">
-              <div className="flex flex-col items-center px-8 py-6 bg-bg-2 sm:rounded-xl rounded-t-xl sm:w-[368px] w-full">
-                <div className="text-white font-inter font-medium mt-2">Are you sure that you want leave?</div>
-                <p className="text-text-additional font-inter text-[13px] w-[244px] text-center mt-2">If you leave, you lost all your results related to generated images</p>
-                <div className="flex flex-col sm:flex-row w-full mt-8 gap-2">
-                  <div className="bg-bg-3 rounded-full px=5 py-[9px] font-inter text-text-sub text-sm font-medium w-full sm:w-1/2 text-center cursor-pointer" onClick={() => setConfirmModal(false)}>Go back</div>
-                  <div className="bg-[#BC7F44] rounded-full px=5 py-[9px] font-inter text-white text-sm font-medium w-full sm:w-1/2 text-center cursor-pointer" onClick={handleConfirmStyleChange}>Confirm</div>
+            <Modal isOpen={confirmModal} onClose={() => false}>
+              <div className="flex flex-col items-center px-8 py-6 bg-bg-2 rounded-xl w-[368px]">
+                <div className="text-white  font-medium mt-2">Are you sure that you want leave?</div>
+                <p className="text-text-additional  text-[13px] w-[244px] text-center mt-2">If you leave, you lost all your results related to generated images</p>
+                <div className="flex flex-row w-full mt-8 gap-2">
+                  <div className="bg-bg-3 rounded-full px=5 py-[9px]  text-text-sub text-sm font-medium w-1/2 text-center cursor-pointer" onClick={() => setConfirmModal(false)}>Go back</div>
+                  <div className="bg-[#BC7F44] rounded-full px=5 py-[9px]  text-white text-sm font-medium w-1/2 text-center cursor-pointer" onClick={handleConfirmStyleChange}>Confirm</div>
                 </div>
               </div>
             </Modal>

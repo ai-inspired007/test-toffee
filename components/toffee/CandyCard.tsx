@@ -1,12 +1,16 @@
 import { KnowledgePack } from "@prisma/client";
 import Image from "next/image";
+import Link from "next/link";
 const CandyCard = ({
-  candy,
+  candy
 }: {
   candy: Partial<KnowledgePack>;
 }) => {
   return (
-    <div className="relative flex h-32 sm:w-80 w-full min-w-80 items-center justify-center rounded-2xl bg-center cursor-pointer  border border-white/10">
+    <Link
+      href={`/knowledge/${candy.id}`}
+      className="relative flex h-32 w-full min-w-80 cursor-pointer items-center justify-center rounded-2xl border border-white/10  bg-center sm:w-80"
+    >
       <Image
         src={candy.image || "/default.png"}
         alt="candy_image"
@@ -52,7 +56,7 @@ const CandyCard = ({
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

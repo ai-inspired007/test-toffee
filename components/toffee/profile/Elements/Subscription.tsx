@@ -132,15 +132,15 @@ export const CancelPro: React.FC<CancelProProps> = ({ customerId, subscriptionEn
   return (
     <div className="w-full h-24 rounded-[8px] border bg-bg-3 border-white/5 relative">
       <div className="flex flex-col gap-2 absolute left-6 top-6">
-        <span className="font-inter font-medium text-lg leading-6 tracking-tight text-[#E69B33]">Toffee+</span>
-        <span className="font-inter font-normal text-xs text-text-additional">Until {formattedDate}</span>
+        <span className=" font-medium text-lg leading-6 tracking-tight text-[#E69B33]">Toffee+</span>
+        <span className=" font-normal text-xs text-text-additional">Until {formattedDate}</span>
       </div>
       <button
         className="h-10 absolute top-7 right-6 rounded-[20px] px-4 py-2 gap-1 bg-[#2F2F2F]"
         onClick={handleCancelSubscription}
         disabled={isCanceling || isLoading}
       >
-        <span className="font-inter font-medium text-sm leading-[18px] text-text-sub">
+        <span className=" font-medium text-sm leading-[18px] text-text-sub">
           {isCanceling ? "Canceling..." : "Cancel subscription"}
         </span>
       </button>

@@ -1,7 +1,7 @@
 import prismadb from "@/lib/prismadb";
 import { auth, signIn } from "auth";
-
-
+import CharacterPage from "@/components/toffee/character";
+import { getCharacter, getCategoriesWithTag, getCandies, getVoices } from "@/lib/query";
 const CharacterIdPage = async ({ params }: {params: {characterId: string}}) => {
   const session = await auth();
 
@@ -9,13 +9,13 @@ const CharacterIdPage = async ({ params }: {params: {characterId: string}}) => {
     await signIn();
     return;
   }
-
-  const categories = await prismadb.category.findMany();
+  const character = await getCharacter(params.characterId)
+  const categories = await getCategoriesWithTag();
+  const voices = await getVoices();
+  const candies = await getCandies({})
 
   return (
-    <div className="-mt-4 flex-1 overflow-x-hidden md:pr-4">
-
-    </div>
+    <CharacterPage character={character} knowledges={candies} voices={voices} categories={categories}/>
   );
 };
 

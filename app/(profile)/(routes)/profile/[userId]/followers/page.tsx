@@ -19,23 +19,25 @@ const FollowerPage = async ({ params }: { params: { userId: string } }) => {
   });
 
   const elements = users.map((item, index) => (
-    <div
+    <Link
       key={index}
+      href={`/profile/${item.userId}`}
       className="w-[152px] h-[145px] px-4 pt-5 pb-4 bg-[#202020] rounded-2xl border border-white/5 flex-col justify-end items-center gap-[19px] inline-flex"
     >
       <Image
-        className="w-[72px] h-[72px] rounded-full border border-black"
+        className="w-[72px] h-[72px] rounded-full border border-black object-cover"
         src={item.profile_image || ""}
         alt=""
-        width={72}
-        height={72}
+        width={0}
+        height={0}
+        sizes="100vw"
       />
       <div
-        className="self-stretch text-center text-white text-sm font-medium font-['Inter'] leading-[18px]"
+        className="self-stretch text-center text-white text-sm font-medium  leading-[18px]"
       >
         {item.name}
       </div>
-    </div>
+    </Link>
   ));
   return (
     <div className="h-screen w-full p-2 overflow-y-auto no-scrollbar">

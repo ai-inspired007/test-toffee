@@ -168,7 +168,7 @@ const UtilityCreate: React.FC = () => {
         </div>
         <div className="no-scrollbar flex h-full w-full max-w-[720px] flex-col gap-6 overflow-x-visible">
           {step === 0 && <>
-            <div className="w-full text-start text-[32px] font-medium text-white mt-24">
+            <div className="w-full text-start text-[32px] font-medium text-white mt-24 ">
               Create Candy Pack
             </div>
             <UploadImage

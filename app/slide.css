@@ -12,7 +12,7 @@
 }
 
 .animated-carousel-dot {
-  background: #0000005d;
+  background: #ffffff5d;
   border: none;
   height: 10px;
   width: 10px;
@@ -25,7 +25,7 @@
 }
 
 .animated-carousel-dot.active {
-  background: #000;
+  background: #ffffff;
 }
 
 .animated-carousel-dot svg {
@@ -40,7 +40,7 @@
 .animated-carousel-dot circle {
   fill: none;
   stroke-width: 2;
-  stroke: black;
+  stroke: white;
   stroke-dasharray: 100;
   stroke-dashoffset: 100;
   animation: drawCircle var(--animation-duration) linear forwards;

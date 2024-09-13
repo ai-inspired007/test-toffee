@@ -11,7 +11,7 @@ import Image from "next/image";
 import { CandyFile, CandyText, CandyLink } from "../Create";
 import ProgressBar from "./ProgressBar";
 import { KnowledgeFile, KnowledgeLink, KnowledgeText } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 const MAX_VOLUME_BYTES = 10 * 1024 * 1024;
 
@@ -56,7 +56,8 @@ const EditCandy = ({
   files,
   texts,
   links,
-  image
+  image,
+  tab
 }: {
     knowledgeId: string;
     files: Partial<KnowledgeFile>[] | undefined;
@@ -64,9 +65,10 @@ const EditCandy = ({
     links: Partial<KnowledgeLink>[] | undefined;
     setIsEdit: (isEdit: boolean) => void;
     image: string | null | undefined;
+    tab: string;
   }) => {
     const router = useRouter();
-    
+    const params = useParams();
   const [imageURL, setImageURL] = useState<string | null>(image ? image: null);
   const [bgFile, setBgFile] = useState<File | null>(null);
 
@@ -80,7 +82,6 @@ const EditCandy = ({
   const progressPercentage = Math.min((totalSizeBytes / MAX_VOLUME_BYTES) * 100, 100);
   const formattedSize = formatBytes(totalSizeBytes);
 
-  
   const [isLoading, setIsLoading] = useState(false);
 
   const handleUpdate = async () => {
@@ -104,9 +105,9 @@ const EditCandy = ({
       const remainLinkIds = addedLinks?.filter(item => item.id !== "").map(item => item.id);
       const removeLinkIds = links?.filter(item => !remainLinkIds?.includes(item.id)).map(item => item.id);
 
-      formData.append('deletedFiles', JSON.stringify(removeFileIds));
-      formData.append('deletedTexts', JSON.stringify(removeTextIds));
-      formData.append('deletedLinks', JSON.stringify(removeLinkIds));
+      removeFileIds && formData.append('deletedFiles', JSON.stringify(removeFileIds));
+      removeTextIds && formData.append('deletedTexts', JSON.stringify(removeTextIds));
+      removeLinkIds && formData.append('deletedLinks', JSON.stringify(removeLinkIds));
       
       setIsLoading(true);
       formData.forEach((value, key) => {
@@ -121,6 +122,7 @@ const EditCandy = ({
       setIsEdit(false);
       if (response.ok) {
         toast.success("Success updating user", { theme: "colored", hideProgressBar: true, autoClose: 1500 });
+        router.push(`/knowledge/${params.knowledgeId}?tab=${tab}`)
         router.refresh();
       } else {
         const error = await response.text();

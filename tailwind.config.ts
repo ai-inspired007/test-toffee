@@ -1,5 +1,7 @@
 import type { Config } from "tailwindcss";
 
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 // Define the configuration for TailwindCSS
 const config: Config = {
   darkMode: ["class"],
@@ -34,6 +36,12 @@ const config: Config = {
             tertiary: "#777777",
             silver: "#B3B3B3",
             gray: "#727272",
+          },
+          yellow: {
+            lighter: "#F2CB8D",
+          },
+          stroke: {
+            accent: "#BC7F44",
           },
         },
         "bg-1": "#000000",
@@ -106,14 +114,18 @@ const config: Config = {
         "spin-2": "spin 2s linear infinite",
       },
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
-        inter: ["Inter", "sans-serif"],
+        sans: ["Inter var", ...defaultTheme.fontFamily.sans],
+        inter: ["Inter var", "sans-serif"],
         hellix: ["Hellix", "sans-serif"],
       },
       backgroundImage: {
         chat: "url('/chat_background.svg')",
         "linear-yellow":
           "linear-gradient(112deg, #C28851 3.31%, #B77536 83.85%)",
+        "linear-indigo":
+          "linear-gradient(180deg, rgba(157, 122, 255, 0.40) 0%, rgba(157, 122, 255, 0.00) 100%)",
+        "carousel-overlay":
+          "linear-gradient(180deg, rgba(18, 18, 18, 0.00) 0%, rgba(18, 18, 18, 0.60) 68.44%, rgba(18, 18, 18, 0.90) 99.77%)",
         "chat-white": "url('/chat_background_white.svg')",
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

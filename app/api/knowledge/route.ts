@@ -114,8 +114,8 @@ export async function POST(req: NextRequest) {
     const themeFile = data.get('themeFile') as File
     const sharing = data.get('sharing') as string
     const texts = data.get('texts') as string;
-    const files = data.getAll('files') as File[]
-    const links = data.get('links') as string;;
+    const files = data.getAll('files') as File[];
+    const links = data.get('links') as string;
     if (!img || typeof img === "string") {
       throw new Error('Image not provided');
     }

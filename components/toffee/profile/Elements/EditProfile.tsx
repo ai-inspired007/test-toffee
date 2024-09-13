@@ -6,7 +6,7 @@ import { UserSettings } from "@prisma/client";
 import ProfileGeneral from "./ProfileGeneral";
 import ProfileAccount from "./ProfileAccount";
 import { ProfileConnections } from "./ProfileConnections";
-import Spinner from "../../../ui/Spinner"; // Assuming you have a Spinner component  
+import Spinner from "../../../ui/Spinner";
 
 const EditProfile = ({
   userId,
@@ -149,7 +149,7 @@ const EditProfile = ({
                 className={`flex w-full justify-center items-center cursor-pointer px-3 py-[9px] gap-2 ${index === step ? "rounded-3xl bg-[#121212]" : ""}`}
                 onClick={() => setStep(index)}
               >
-                <div className={`text-center font-inter text-sm font-medium leading-[18px] ${index === step ? "text-white" : "text-[#777777]"}`}>{item}</div>
+                <div className={`text-center  text-sm font-medium leading-[18px] ${index === step ? "text-white" : "text-[#777777]"}`}>{item}</div>
               </div>
             ))}
           </div>
@@ -190,13 +190,13 @@ const EditProfile = ({
         </div>
         {unsavedChanges() && (
           <div className="flex items-center justify-between w-full py-[10px] pl-6 pr-[3px] max-w-[560px] mt-12 bg-white rounded-full">
-            <span className="font-inter font-medium text-sm leading-[18px] text-black">Careful - you have unsaved changes!</span>
+            <span className=" font-medium text-sm leading-[18px] text-black">Careful - you have unsaved changes!</span>
             <button
               onClick={handleUpdate}
               disabled={isLoading}
               className={`flex justify-center bg-gradient-to-r from-[#C28851] to-[#B77536] rounded-[20px] text-center px-4 py-1.5 gap-2 border border-white/20 ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             >
-              <span className="font-inter font-medium text-sm leading-[18px] text-white">Save changes</span>
+              <span className=" font-medium text-sm leading-[18px] text-white">Save changes</span>
             </button>
           </div>
         )}

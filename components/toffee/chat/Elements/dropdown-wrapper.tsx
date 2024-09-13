@@ -6,14 +6,21 @@ import { ArrowUpSLineIcon } from "../../icons/ArrowUpSLineIcon";
 
 export type DropdownWrapperProps = {
   label: string;
+  height: string;
   children: React.ReactNode;
 };
 
-export function DropdownWrapper({ label, children }: DropdownWrapperProps) {
+export function DropdownWrapper({
+  label,
+  height,
+  children,
+}: DropdownWrapperProps) {
   const [isOpen, setIsOpen] = useState(true);
-
   return (
-    <div className="flex max-h-[21%] flex-col rounded-lg bg-bg-2 p-4">
+    <div
+      className="flex flex-col rounded-lg bg-bg-2 p-4"
+      style={{ maxHeight: height }}
+    >
       <div className="flex w-full flex-row items-center justify-between">
         <span className="text-base font-[500] text-text-sub">{label}</span>
         <ArrowUpSLineIcon

@@ -1,168 +1,593 @@
 "use client";
-import { useState } from 'react';
-import { Character, Follow, KnowledgePack, UserSettings } from "@prisma/client";
+import { useEffect, useState } from "react";
+import {
+  Character,
+  CharacterFeedback,
+  CharacterKnowledgePack,
+  Follow,
+  KnowledgePack,
+  UserSettings,
+  Voice,
+} from "@prisma/client";
 import Image from "next/image";
 import { VerifiedFill } from "../icons/Badge";
-import { RiPencilRuler2Line } from '../icons/PencilRuler';
-import { PrimeLinkedin, PrimeTwitter, MageInstagramSquare, IcSharpTelegram } from '../icons/Socials';
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
-import Characters from './Elements/CharacterPanel';
-import Candies from './Elements/CandyPanel';
-import Voices from './Elements/VoicePanel';
-import All from './Elements/AllPanel';
-import clsx from 'clsx';
-import { Button } from '@/components/ui/button';
-import axios from 'axios';
+import { RiPencilRuler2Line } from "../icons/PencilRuler";
+import {
+  PrimeLinkedin,
+  PrimeTwitter,
+  MageInstagramSquare,
+  IcSharpTelegram,
+} from "../icons/Socials";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
+import Characters from "./Elements/CharacterPanel";
+import Candies from "./Elements/CandyPanel";
+import Voices from "./Elements/VoicePanel";
+import All from "./Elements/AllPanel";
+import clsx from "clsx";
+import axios from "axios";
 import { toast } from "react-toastify";
-import Link from 'next/link';
-import { ArrowLeft, ArrowRight, PlusIcon } from 'lucide-react';
-import { SortDescIcon } from '../icons/SortDescIcon';
-import { useRouter } from 'next/navigation';
-const ProfilePage = ({ data }: {
+import Link from "next/link";
+import { ArrowLeft, PlusIcon } from "lucide-react";
+import { SortDescIcon } from "../icons/SortDescIcon";
+import { useRouter } from "next/navigation";
+
+type CharacterWeightType = {
+  likesWeight: number;
+  starsWeight: number;
+  messagesWeight: number;
+};
+
+type CandyWeightType = {
+  connectedCharacters: number;
+};
+
+type VoiceWeightType = {
+  connectedCharacters: number;
+};
+
+const ProfilePage = ({
+  data,
+}: {
   data: {
     type: string;
     user: Partial<UserSettings | null>;
     characters: Partial<Character & { _count: { messages: number } }>[];
+    characterFeedbacks: Partial<CharacterFeedback>[];
     candies: Partial<KnowledgePack>[];
+    characterKnowledgePacks: Partial<CharacterKnowledgePack>[];
     userFollowings: Partial<Follow>[];
     currentUserId: string;
     userId: string;
     currentFollowers: Partial<Follow>[];
     currentFollowings: Partial<Follow>[];
-  }
+    voiceList: Partial<Voice>[];
+  };
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const addContents = ["all", "character", "candie", "voice"];
   const linkContents = ["all", "character", "candy", "voice"];
-  const categories = {
-    All: <All characters={data.characters} candies={data.candies} type={data.type} />,
-    Characters: <Characters characters={data.characters} type={data.type} />,
-    Candies: <Candies candies={data.candies} type={data.type} />,
-    Voices: <Voices type={data.type} />
-  }
-  const [followingList, setFollowingList] = useState(data.userFollowings);
-  const [currentFollowers, setCurrentFollowers] = useState(data.currentFollowers);
-  const [currentFollowings, setCurrentFollowings] = useState(data.currentFollowings);
-  const [isEdit, setIsEdit] = useState(false);
-  const [name, setName] = useState<string | null>(data.user?.name || null);
-  const [banner, setBanner] = useState<string | null>(data.user?.banner_image || null);
+  const [popularity, setPopularity] = useState<boolean>(false);
 
+  const [sortedCharacter, setSortedCharacter] = useState<
+    Partial<Character & { _count: { messages: number } }>[]
+  >([]);
+  const [sortedCandies, setSortedCandies] = useState<Partial<KnowledgePack>[]>(
+    [],
+  );
+
+  const [sortedVoices, setSortedVoices] = useState<Partial<Voice>[]>([]);
+
+  // Define weights for each factor
+
+  const weights: CharacterWeightType = {
+    likesWeight: 0.4, // 40% weight for likes
+    starsWeight: 0.3, // 30% weight for stars
+    messagesWeight: 0.3, // 30% weight for number of messages
+  };
+
+  // Function to calculate popularity score
+  function calculatePopularity(
+    likes: number,
+    stars: number,
+    numOfMessages: number,
+    weights: CharacterWeightType,
+  ) {
+    return (
+      likes * weights.likesWeight +
+      stars * weights.starsWeight +
+      numOfMessages * weights.messagesWeight
+    );
+  }
+
+  function getCharacterByPopularityScore(
+    _character: Partial<Character & { _count: { messages: number } }>,
+    _characterFeedbacks: Partial<CharacterFeedback>[],
+  ) {
+    let popularityScore = 0;
+    let numOfMessages = _character._count?.messages ?? 0;
+    let feedbacks: Partial<CharacterFeedback>[] = _characterFeedbacks.filter(
+      (feedback) => feedback.characterId === _character.id,
+    );
+    let likes = 0;
+    let stars = 0;
+    if (feedbacks.length > 0) {
+      feedbacks.forEach((feedback) => {
+        let like = feedback.like;
+        if (like) {
+          likes++;
+        }
+
+        let star = feedback.star;
+        if (star) {
+          stars++;
+        }
+      });
+    }
+
+    popularityScore = calculatePopularity(likes, stars, numOfMessages, weights);
+
+    return popularityScore;
+  }
+
+  // Function to sort chatbots based on popularity
+  function sortCharacterByPopularity(
+    _characters: Partial<Character & { _count: { messages: number } }>[],
+    _characterFeedbacks: Partial<CharacterFeedback>[],
+    popularity: boolean,
+  ) {
+    if (!popularity) {
+      return _characters
+        .map((character) => ({
+          ...character,
+          popularityScore: getCharacterByPopularityScore(
+            character,
+            _characterFeedbacks,
+          ),
+        }))
+        .sort((a, b) => b.popularityScore - a.popularityScore);
+    } else {
+      return _characters
+        .map((character) => ({
+          ...character,
+          popularityScore: getCharacterByPopularityScore(
+            character,
+            _characterFeedbacks,
+          ),
+        }))
+        .sort((a, b) => a.popularityScore - b.popularityScore);
+    }
+  }
+
+  const togglePopularity = () => {
+    setPopularity((prev) => !prev);
+  };
+
+  // Define weights for each factor
+
+  const voiceWeights: VoiceWeightType = {
+    connectedCharacters: 1, // 100% weight for connectedCharacters
+  };
+
+  // Function to calculate popularity score
+  function calculateVoicePopularity(
+    numOfMessages: number,
+    weights: CandyWeightType,
+  ) {
+    return numOfMessages * weights.connectedCharacters;
+  }
+
+  const getVoiceByPopularityScore = (
+    voice: Partial<Voice>,
+    _character: Partial<Character & { _count: { messages: number } }>[],
+  ) => {
+    let popularityScore = 0;
+    let voiceId = voice.id;
+    let connectedCharacters = _character.filter(
+      (item) => item.voiceId == voiceId,
+    ).length;
+
+    popularityScore = calculateVoicePopularity(
+      connectedCharacters,
+      voiceWeights,
+    );
+
+    return popularityScore;
+  };
+
+  const sortVoicesByPopularity = (
+    _voices: Partial<Voice>[],
+    _character: Partial<Character & { _count: { messages: number } }>[],
+    popularity: boolean,
+  ) => {
+    if (!popularity) {
+      return _voices
+        .map((voice) => ({
+          ...voice,
+          popularityScore: getVoiceByPopularityScore(voice, _character),
+        }))
+        .sort((a, b) => b.popularityScore - a.popularityScore);
+    } else {
+      return _voices
+        .map((voice) => ({
+          ...voice,
+          popularityScore: getVoiceByPopularityScore(voice, _character),
+        }))
+        .sort((a, b) => a.popularityScore - b.popularityScore);
+    }
+  };
+
+  // Define weights for each factor
+
+  const candyWeights: CandyWeightType = {
+    connectedCharacters: 1, // 100% weight for connectedCharacters
+  };
+
+  // Function to calculate popularity score
+  function calculateCandyPopularity(
+    numOfMessages: number,
+    weights: CandyWeightType,
+  ) {
+    return numOfMessages * weights.connectedCharacters;
+  }
+
+  const getCandyByPopularityScore = (
+    candy: Partial<KnowledgePack>,
+    _characterKnowledgePacks: Partial<CharacterKnowledgePack>[],
+  ) => {
+    let popularityScore = 0;
+    let candyId = candy.id;
+    let connectedCharacters = _characterKnowledgePacks.filter(
+      (item) => item.knowledgePackId === candyId,
+    ).length;
+
+    popularityScore = calculateCandyPopularity(
+      connectedCharacters,
+      candyWeights,
+    );
+    return popularityScore;
+  };
+
+  const sortCandiesByPopularity = (
+    _candies: Partial<KnowledgePack>[],
+    _characterKnowledgePacks: Partial<CharacterKnowledgePack>[],
+    popularity: boolean,
+  ) => {
+    if (!popularity) {
+      return _candies
+        .map((candy) => ({
+          ...candy,
+          popularityScore: getCandyByPopularityScore(
+            candy,
+            _characterKnowledgePacks,
+          ),
+        }))
+        .sort((a, b) => b.popularityScore - a.popularityScore);
+    } else {
+      return _candies
+        .map((candy) => ({
+          ...candy,
+          popularityScore: getCandyByPopularityScore(
+            candy,
+            _characterKnowledgePacks,
+          ),
+        }))
+        .sort((a, b) => a.popularityScore - b.popularityScore);
+    }
+  };
+
+  useEffect(() => {
+    if (data.characters && data.characterFeedbacks) {
+      setSortedCharacter(
+        sortCharacterByPopularity(
+          data.characters,
+          data.characterFeedbacks,
+          popularity,
+        ),
+      );
+    }
+    if (data.candies && data.characterKnowledgePacks) {
+      setSortedCandies(
+        sortCandiesByPopularity(
+          data.candies,
+          data.characterKnowledgePacks,
+          popularity,
+        ),
+      );
+    }
+
+    if (data.voiceList && data.characters) {
+      setSortedVoices(
+        sortVoicesByPopularity(data.voiceList, data.characters, popularity),
+      );
+    }
+  }, [popularity]);
+
+  const categories = {
+    All: (
+      <All
+        characters={sortedCharacter}
+        candies={sortedCandies}
+        type={data.type}
+        voiceList={sortedVoices}
+      />
+    ),
+    Characters: <Characters characters={sortedCharacter} type={data.type} />,
+    Candies: <Candies candies={sortedCandies} type={data.type} />,
+    Voices: (
+      <Voices
+        type={data.type}
+        voicelist={sortedVoices}
+        characters={sortedCharacter}
+      />
+    ),
+  };
+  const [followingList, setFollowingList] = useState<Partial<Follow>[]>(
+    data.userFollowings,
+  );
+  const [currentFollowers, setCurrentFollowers] = useState<Partial<Follow>[]>(
+    data.currentFollowers,
+  );
+  const [currentFollowings, setCurrentFollowings] = useState<Partial<Follow>[]>(
+    data.currentFollowings,
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFollowing, setIsFollowing] = useState<boolean>(
+    followingList.some((item) => item.following_id === data.currentUserId),
+  );
+  const [name, setName] = useState<string | null>(data.user?.name || null);
+  const [banner, setBanner] = useState<string | null>(
+    data.user?.banner_image || null,
+  );
   const router = useRouter();
   const onFollow = () => {
     let newFollow = {
       id: "new",
       folloer_id: data.userId,
-      following_id: data.currentUserId
-    }
-    setFollowingList((current) => current.length ? [...current, newFollow] : [newFollow]);
-    setCurrentFollowers((current) => current.length ? [...current, newFollow] : [newFollow]);
-    axios.post(`/api/user/${data.userId}/follow`, {
       following_id: data.currentUserId,
-    })
-      .then(res => {
-        setFollowingList((current) => current.length > 1 ? [...current.slice(0, -1), res.data.createdFollow] : [res.data.createdFollow]);
-        setCurrentFollowers((current) => current.length > 1 ? [...current.slice(0, -1), res.data.createdFollow] : [res.data.createdFollow]);
+    };
+    setFollowingList((current) =>
+      current.length ? [...current, newFollow] : [newFollow],
+    );
+    setCurrentFollowers((current) =>
+      current.length ? [...current, newFollow] : [newFollow],
+    );
+    setIsFollowing(true);
+    setIsLoading(true);
+    axios
+      .post(`/api/user/${data.userId}/follow`, {
+        following_id: data.currentUserId,
       })
-      .catch(error => {
+      .then((res) => {
+        setFollowingList((current) =>
+          current.length > 1
+            ? [...current.slice(0, -1), res.data.createdFollow]
+            : [res.data.createdFollow],
+        );
+        setCurrentFollowers((current) =>
+          current.length > 1
+            ? [...current.slice(0, -1), res.data.createdFollow]
+            : [res.data.createdFollow],
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
         setFollowingList((current) => current.slice(0, -1));
         setCurrentFollowers((current) => current.slice(0, -1));
-        toast.error("Something went wrong while toggling share. Make sure your bot is allowed under OpenAI moderation rules. If the error persists, please contact the developers.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
+        setIsFollowing(false);
+        setIsLoading(false);
+        toast.error(
+          "Something went wrong while following the user. Please try again.",
+          {
+            theme: "colored",
+            autoClose: 1500,
+            hideProgressBar: true,
+          },
+        );
       });
-  }
+  };
 
   const onUnfollow = () => {
-    const followId = followingList.find(item => item.follower_id === data.userId && item.following_id === data.currentUserId)?.id;
-    const deleteFollow = followingList.filter(item => item.id === followId)[0];
-    const deleteFollower = currentFollowers.filter(item => item.id === followId)[0];
-    setFollowingList((current) => current.filter(item => item.id !== followId));
-    setCurrentFollowers((current) => current.filter(item => item.id !== followId));
-    axios.delete(`/api/user/${data.userId}/follow/${followId}`)
-      .catch(error => {
-        setFollowingList((current) => current.length ? [...current, deleteFollow] : [deleteFollow]);
-        setCurrentFollowers((current) => current.length ? [...current, deleteFollower] : [deleteFollower]);
-        console.log(error);
-        toast.error("Something went wrong in character deletion.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
+    const followId = followingList.find(
+      (item) =>
+        item.follower_id === data.userId &&
+        item.following_id === data.currentUserId,
+    )?.id;
+    const deleteFollow = followingList.filter(
+      (item) => item.id === followId,
+    )[0];
+    const deleteFollower = currentFollowers.filter(
+      (item) => item.id === followId,
+    )[0];
+    setFollowingList((current) =>
+      current.filter((item) => item.id !== followId),
+    );
+    setCurrentFollowers((current) =>
+      current.filter((item) => item.id !== followId),
+    );
+    setIsFollowing(false);
+    setIsLoading(true);
+    axios
+      .delete(`/api/user/${data.userId}/follow/${followId}`)
+      .then((res) => {
+        setIsLoading(false);
       })
-  }
+      .catch((error) => {
+        setFollowingList((current) =>
+          current.length ? [...current, deleteFollow] : [deleteFollow],
+        );
+        setCurrentFollowers((current) =>
+          current.length ? [...current, deleteFollower] : [deleteFollower],
+        );
+        setIsFollowing(true);
+        setIsLoading(false);
+        console.log(error);
+        toast.error(
+          "Something went wrong while unfollowing the user. Please try again.",
+          {
+            theme: "colored",
+            autoClose: 1500,
+            hideProgressBar: true,
+          },
+        );
+      });
+  };
 
   return (
-    <div className="h-screen w-full sm:p-2 overflow-y-auto no-scrollbar">
-      <div className="flex flex-col sm:rounded-lg bg-bg-2 w-full min-h-full">
-        <div className={`z-10 ${banner === null && "bg-gradient-to-r from-[#3A1A56] to-[#7034A5]"} h-fit sm:h-[280px] w-full flex flex-col sm:flex-row justify-center sm:justify-start items-end px-5 sm:px-6 sm:rounded-t-lg py-6 sm:py-8 relative overflow-hidden`}>
+    <div className="no-scrollbar h-screen w-full overflow-y-auto sm:p-2">
+      <div className="flex min-h-full w-full flex-col bg-bg-2 sm:rounded-lg">
+        <div
+          className={`z-10 ${banner === null && "bg-gradient-to-r from-[#3A1A56] to-[#7034A5]"} relative flex h-fit w-full flex-col items-end justify-center overflow-hidden px-5 py-6 sm:h-[280px] sm:flex-row sm:justify-start sm:rounded-t-lg sm:px-6 sm:py-8`}
+        >
           {banner && (
             <Image
               src={banner}
               alt="Background"
-              className="w-full h-[280px] absolute top-0 sm:rounded-lg -z-10"
+              className="absolute top-0 -z-10 h-[280px] w-full sm:rounded-lg"
               width={0}
               height={0}
-              sizes='100vw'
+              sizes="100vw"
             />
           )}
-          <div className='flex flex-col sm:flex-row items-center justify-center sm:justify-start w-full gap-4 sm:gap-8'>
-            <div className='flex flex-col absolute items-center justify-center w-9 h-9 cursor-pointer top-4 left-5 sm:left-[18px] sm:top-[14px] rounded-none sm:rounded-[20px] sm:bg-bg-3'>
-              <ArrowLeft className='text-white w-6 h-6' />
+          <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row sm:justify-start sm:gap-8">
+            <div className="absolute left-5 top-4 flex h-9 w-9 cursor-pointer flex-col items-center justify-center rounded-none sm:left-[18px] sm:top-[14px] sm:rounded-[20px] sm:bg-bg-3">
+              <ArrowLeft className="h-6 w-6 text-white" />
             </div>
-            <Image src={data.user?.profile_image || "https://source.boringavatars.com/marble/120"} width={0} height={0} sizes='100vw' className='rounded-full h-24 w-24 sm:w-[180px] sm:h-[180px]' alt='Profile Logo' />
-            <div className="flex flex-col gap-4 sm:gap-6 sm:mt-auto justify-center sm:justify-start items-center sm:items-start w-full">
-              <div className="text-white text-[40px] sm:text-[80px] font-semibold sm:font-bold leading-[48px] sm:leading-[100px]">{name}</div>
-              <div className='flex flex-col sm:flex-row sm:justify-between justify-center items-center w-full gap-4'>
+            <Image
+              src={
+                data.user?.profile_image ||
+                "https://source.boringavatars.com/marble/120"
+              }
+              width={0}
+              height={0}
+              sizes="100vw"
+              className="h-24 w-24 rounded-full object-cover sm:h-[180px] sm:w-[180px] sm:min-w-[180px]"
+              alt="Profile Logo"
+            />
+            <div className="flex w-full flex-col items-center justify-center gap-4 sm:mt-auto sm:items-start sm:justify-start sm:gap-6">
+              <div className="text-[40px] font-semibold leading-[48px] text-white sm:text-[80px] sm:font-bold sm:leading-[100px]">
+                {name}
+              </div>
+              <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
                 <div className="flex flex-row items-center gap-3">
-                  <Link href={data.currentUserId + "/following"}><span className="text-sm  text-text-additional">{Number(currentFollowings ? currentFollowings.length : 0).toLocaleString('en')} Following</span></Link>
-                  <div className="h-1.5 w-1.5 bg-[#B1B1B1] rounded-full" />
-                  <Link href={data.currentUserId + "/followers"}><span className="text-sm  text-text-additional">{Number(currentFollowers ? currentFollowers.length : 0).toLocaleString('en')} Followers</span></Link>
-                  <div className='hidden sm:flex flex-row gap-3 items-center'>
-                    <div className="h-1.5 w-1.5 bg-[#B1B1B1] rounded-full" />
+                  <Link href={`${data.userId}/following`}>
+                    <span className="text-sm text-text-additional">
+                      {Number(currentFollowings?.length || 0).toLocaleString(
+                        "en",
+                      )}{" "}
+                      Following
+                    </span>
+                  </Link>
+                  <div className="h-1.5 w-1.5 rounded-full bg-[#B1B1B1]" />
+                  <Link href={`${data.userId}/followers`}>
+                    <span className="text-sm text-text-additional">
+                      {Number(currentFollowers?.length || 0).toLocaleString(
+                        "en",
+                      )}{" "}
+                      Followers
+                    </span>
+                  </Link>
+                  <div className="hidden flex-row items-center gap-3 sm:flex">
+                    <div className="h-1.5 w-1.5 rounded-full bg-[#B1B1B1]" />
                     <VerifiedFill className="h-6 w-6 text-white" />
                     <RiPencilRuler2Line className="h-5 w-5 text-white" />
                   </div>
                 </div>
-                <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 w-full sm:w-fit'>
-                  <div className='flex flex-row gap-2 rounded-full w-full py-0 px-1 items-center justify-center text-white'>
-                    <PrimeLinkedin className="h-10 w-10 p-1 cursor-pointer" />
-                    <IcSharpTelegram className="h-10 w-10 p-1.5 cursor-pointer" />
-                    <MageInstagramSquare className="h-10 w-10 p-1.5 cursor-pointer" />
-                    <PrimeTwitter className="h-8 w-8 p-1.5 cursor-pointer" />
+                <div className="flex w-full flex-col gap-4 sm:w-fit sm:flex-row sm:gap-6">
+                  <div className="flex w-full flex-row items-center justify-center gap-2 rounded-full px-1 py-0 text-white">
+                    <PrimeLinkedin className="h-10 w-10 cursor-pointer p-1" />
+                    <IcSharpTelegram className="h-10 w-10 cursor-pointer p-1.5" />
+                    <MageInstagramSquare className="h-10 w-10 cursor-pointer p-1.5" />
+                    <PrimeTwitter className="h-8 w-8 cursor-pointer p-1.5" />
                   </div>
-                  {data.type === "personal" ? (<div className="flex flex-row items-center py-1.5 px-4 gap-2 text-black bg-white rounded-full justify-center w-full sm:w-[120px] h-9">
-                    <Button variant="ghost" className="text-sm py-[3px] font-medium" onClick={() => router.push(`/profile/${data.userId}/edit`)}>Edit profile</Button>
-                  </div>) : (followingList?.map(item => item.following_id).includes(data.currentUserId) ? (<div className="flex flex-row items-center py-1.5 px-4 gap-2 text-text-sub bg-white rounded-full justify-center">
-                    <Button variant="ghost" className="text-sm py-[3px] font-medium" onClick={() => onUnfollow()}>Unfollow</Button>
-                  </div>) : (<div className="flex flex-row items-center py-1.5 px-4 gap-1 text-white bg-gradient-to-r from-[#C28851] to-[#B77536] rounded-full w-full sm:w-[120px] h-9 justify-center">
-                    <Button variant="ghost" className="text-sm py-[3px] medium" onClick={() => onFollow()}>Follow</Button>
-                  </div>))}
+                  {data.type === "personal" ? (
+                    <div className="flex h-9 w-full items-center justify-center gap-2 rounded-full bg-white px-4 py-1.5 text-black sm:min-w-[120px]">
+                      <button
+                        className="py-[3px] text-sm font-medium"
+                        onClick={() =>
+                          router.push(`/profile/${data.userId}/edit`)
+                        }
+                      >
+                        Edit profile
+                      </button>
+                    </div>
+                  ) : isFollowing ? (
+                    <div className="flex min-w-[120px] flex-row items-center justify-center gap-2 rounded-full border border-white px-4 py-1.5 text-white">
+                      <button
+                        className="px-1 py-[3px] text-sm font-medium"
+                        onClick={onUnfollow}
+                        disabled={isLoading}
+                      >
+                        Unfollow
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex w-full min-w-[120px] flex-row items-center justify-center gap-1 rounded-full bg-white px-4 py-1.5 text-black sm:w-[120px]">
+                      <button
+                        className="px-1 py-[3px] text-sm font-medium"
+                        onClick={onFollow}
+                        disabled={isLoading}
+                      >
+                        Follow
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <TabGroup selectedIndex={selectedIndex} onChange={setSelectedIndex} className="flex flex-col gap-8 w-full px-5 sm:px-6 py-6 sm:py-8 flex-grow relative z-10 bg-bg-2">
-          <div className='h-[180px] w-full absolute top-0 left-0 bg-gradient-to-b from-[#2D1542] to-[#121212]' />
-          <div className='flex flex-col gap-6 sm:flex-row sm:justify-between z-10'>
-            <TabList className="flex bg-black rounded-full p-0.5 w-full sm:w-fit h-10">
+        <TabGroup
+          selectedIndex={selectedIndex}
+          onChange={setSelectedIndex}
+          className="relative z-10 flex w-full flex-grow flex-col gap-8 bg-bg-2 px-5 py-6 sm:px-6 sm:py-8"
+        >
+          <div className="absolute left-0 top-0 h-[180px] w-full bg-gradient-to-b from-[#2D1542] to-[#121212]" />
+          <div className="z-10 flex flex-col gap-6 sm:flex-row sm:justify-between">
+            <TabList className="flex h-10 w-full rounded-full bg-black p-0.5 sm:w-fit">
               {Object.keys(categories).map((category) => (
-                <Tab key={category} className={({ selected }) => clsx('px-4 w-full text-center', selected ? 'text-white rounded-full bg-bg-2 border-none outline-none' : 'text-text-tertiary')}>
+                <Tab
+                  key={category}
+                  className={({ selected }) =>
+                    clsx(
+                      "w-full px-4 text-center",
+                      selected
+                        ? "rounded-full border-none bg-bg-2 text-white outline-none"
+                        : "text-text-tertiary",
+                    )
+                  }
+                >
                   {category}
                 </Tab>
               ))}
             </TabList>
-            <div className="flex gap-6 items-center justify-end">
-              <div className='flex gap-3 items-center'>
-                <span className=" text-sm font-medium text-white">Popularity</span>
-                <SortDescIcon className="w-6 h-6 text-[#B1B1B1]" />
+            <div className="flex items-center justify-end gap-6">
+              <div className="flex items-center gap-3">
+                <span className=" text-sm font-medium text-white">
+                  Popularity
+                </span>
+                <button
+                  className="bg-transparent p-0"
+                  style={{
+                    transform: `${!popularity ? "rotateX(0deg)" : "rotateX(-180deg)"}`,
+                  }}
+                  onClick={togglePopularity}
+                >
+                  <SortDescIcon className="h-6 w-6 text-[#B1B1B1] " />
+                </button>
               </div>
-              {(selectedIndex > 0 && data.type === "personal") && (<div className='flex w-[164px] items-center justify-center gap-1 rounded-[20px] px-4 py-[6px] bg-bg-2'>
-                <PlusIcon className='w-6 h-6 text-[#B1B1B1]' />
-                <Link href={`/create/${linkContents[selectedIndex]}`}>
-                  <span className=' font-medium text-sm leading-[18px] text-text-sub'>{`Add ${addContents[selectedIndex]}`}</span>
-                </Link>
-              </div>
+              {selectedIndex > 0 && data.type === "personal" && (
+                <div className="flex w-[164px] items-center justify-center gap-1 rounded-[20px] bg-bg-2 px-4 py-[6px]">
+                  <PlusIcon className="h-6 w-6 text-[#B1B1B1]" />
+                  <Link href={`/create/${linkContents[selectedIndex]}`}>
+                    <span className=" text-sm font-medium leading-[18px] text-text-sub">{`Add ${addContents[selectedIndex]}`}</span>
+                  </Link>
+                </div>
               )}
             </div>
           </div>
-          <TabPanels className="w-full overflow-y-auto flex-grow flex flex-col z-10">
+          <TabPanels className="z-10 flex w-full flex-grow flex-col overflow-y-auto">
             {Object.values(categories).map((content, idx) => (
-              <TabPanel key={idx} className={"flex-grow flex flex-col"}>
+              <TabPanel key={idx} className={"flex flex-grow flex-col"}>
                 {content}
               </TabPanel>
             ))}
@@ -170,7 +595,7 @@ const ProfilePage = ({ data }: {
         </TabGroup>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default ProfilePage;

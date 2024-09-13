@@ -1,9 +1,21 @@
 "use client";
 import { useChat, useCompletion } from "ai/react";
-import type { Character, Message, UserSettings } from "@prisma/client";
+import type {
+  Character,
+  ChatSetting,
+  Message,
+  UserSettings,
+} from "@prisma/client";
 import { ChatHeader } from "./Elements/ChatHeader";
 import { useRouter } from "next/navigation";
-import { Dispatch, ElementRef, FormEvent, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  ElementRef,
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ChatForm } from "./Elements/ChatForm";
 import { ChatMessages } from "./Elements/ChatMessages";
 import { ChatMessageProps } from "./Elements/ChatMessage";
@@ -15,10 +27,10 @@ import { StreamingCompletionContext } from "@/lib/chat/context";
 import { ChatDetail } from "./Elements/ChatDetail";
 import { ChatTopNav } from "./Elements/ChatTopNav";
 import { CandyFile } from "@/components/toffee/knowledge/Create";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { useSidebarContext } from "@/contexts/SidebarProvider";
 import { MdiInformationOutline } from "../icons/InformationLine";
-import VoiceChat from "./Elements/VoiceChat"
+import VoiceChat from "./Elements/VoiceChat";
 import { NowPlayingContextProvider } from "react-nowplaying";
 import { MicrophoneContextProvider } from "@/contexts/Microphone";
 import { AudioStoreContextProvider } from "@/contexts/AudioStore";
@@ -26,17 +38,32 @@ import { MessageMetadataContextProvider } from "@/contexts/MessageMetadata";
 import { DeepgramContextProvider } from "@/contexts/Deepgram";
 import { ReportModal } from "./Elements/ReportModal";
 import { ShareModal } from "./Elements/ShareModal";
-const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRecentOpen, userSettings, userId, isReportModal, setReportModal, isShareModal, setShareModal }: {
+import { useChatPage } from "@/contexts/ChatPageProvider";
+const ChatMainSection = ({
+  character,
+  initialInput,
+  openRight,
+  setRightOpen,
+  openRecent,
+  setRecentOpen,
+  userSettings,
+  userId,
+  isReportModal,
+  setReportModal,
+  isShareModal,
+  setShareModal,
+}: {
   character: Character & {
     messages: Message[];
     _count: {
-      messages: number
-    }
-  },
-  openRight: boolean,
-  setRightOpen: (openRight: boolean) => void,
-  openRecent: boolean,
-  setRecentOpen: (openRecent: boolean) => void,
+      messages: number;
+    };
+  };
+  initialInput: string;
+  openRight: boolean;
+  setRightOpen: (openRight: boolean) => void;
+  openRecent: boolean;
+  setRecentOpen: (openRecent: boolean) => void;
   userSettings: UserSettings | null;
   userId: string;
   isReportModal: boolean;
@@ -46,6 +73,7 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
 }) => {
   const router = useRouter();
   const { API, updateAPI, toggleBlocked } = useAIContext();
+  const { chatSettings } = useChatPage();
   const [messages, setMessages] = useState<ChatMessageProps[]>(
     character.messages,
   );
@@ -82,15 +110,24 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
     focusRef?.current?.focus();
   };
 
-  const { input, handleInputChange, handleSubmit, setInput, completion, setCompletion, stop, } = useCompletion({
+  const {
+    input,
+    handleInputChange,
+    handleSubmit,
+    setInput,
+    completion,
+    setCompletion,
+    stop,
+  } = useCompletion({
     api: API_URL,
+    initialInput: initialInput,
     body: {
       fileName,
       fileKey,
       fileType,
       promptId,
       completionId,
-      isRegenerate: false
+      isRegenerate: false,
     },
     onError(error) {
       let message = error.message;
@@ -103,7 +140,11 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
         updateAPI("Llama");
         toggleBlocked(true);
       }
-      toast.error(`${message}`, {theme: "colored", autoClose: 1500, hideProgressBar: true,});
+      toast.error(`${message}`, {
+        theme: "colored",
+        autoClose: 1500,
+        hideProgressBar: true,
+      });
       const errorMessage: ChatMessageProps = {
         role: "assistant",
         content: `There was an error sending this message. If the issue persists, contact the developers.`,
@@ -124,12 +165,19 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
   const onClear = async () => {
     try {
       await axios.delete(`/api/character/${character.id}/clear`);
-      toast.success("Successfully cleared the chat.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
+      toast.success("Successfully cleared the chat.", {
+        theme: "colored",
+        autoClose: 1500,
+        hideProgressBar: true,
+      });
       toggleBlocked(false);
       setMessages([]);
     } catch (error) {
       console.log(error);
-      toast.error("Something went wrong. Please wait a bit and try again. If the error persists, contact a developer.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
+      toast.error(
+        "Something went wrong. Please wait a bit and try again. If the error persists, contact a developer.",
+        { theme: "colored", autoClose: 1500, hideProgressBar: true },
+      );
     }
   };
 
@@ -139,17 +187,19 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
 
       const response = await axios.get(apiUrl);
 
-      setMessages((current) => current.map(item => ({ ...item, isEmbedded: true })))
-      console.log('Response received:', response.data);
+      setMessages((current) =>
+        current.map((item) => ({ ...item, isEmbedded: true })),
+      );
+      console.log("Response received:", response.data);
     } catch (error) {
       // Error handling
-      console.error('Failed to send embed message:', error);
+      console.error("Failed to send embed message:", error);
     }
-  }
+  };
 
   useEffect(() => {
     const parseUpdates = async () => {
-      console.log(completionId, selectedId)
+      console.log(completionId, selectedId);
       const aiMessage: ChatMessageProps = {
         id: selectedId.length ? selectedId : completionId,
         role: "assistant",
@@ -158,10 +208,9 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
         isEmbedded: false,
         image_url: null,
         file_name: null,
-        file_type: null
+        file_type: null,
       };
-      if (completion !== "")
-        setMessages((current) => [...current, aiMessage]);
+      if (completion !== "") setMessages((current) => [...current, aiMessage]);
       setCompletion("");
       // console.log("[FINISH]", completion);
       setInput("");
@@ -169,8 +218,8 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
       setCompletionId(uuidv4());
       setSelectedId("");
 
-      if (messages.filter(item => !item.isEmbedded).length === 30) {
-        onEmbedMessages()
+      if (messages.filter((item) => !item.isEmbedded).length === 30) {
+        onEmbedMessages();
       }
       // router.refresh();
     };
@@ -188,11 +237,25 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
       parseUpdates();
       setProgress(false);
     }
-  }, [messages, isTyping]);
+  }, [
+    messages,
+    isTyping,
+    completion,
+    completionId,
+    onEmbedMessages,
+    progress,
+    selectedId,
+    setCompletion,
+    setInput,
+  ]);
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     if (uploadLoading) {
-      toast.success("Image is still uploading.", {theme: "colored", autoClose: 1000, hideProgressBar: true,});
+      toast.success("Image is still uploading.", {
+        theme: "colored",
+        autoClose: 1000,
+        hideProgressBar: true,
+      });
       return;
     } // can't submit if image is still uploading
 
@@ -216,7 +279,7 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
       image_url: image,
       fileKey: fileKey,
       file_name: fileName,
-      file_type: fileType
+      file_type: fileType,
     };
 
     setMessages((current) => [...current, userMessage]);
@@ -256,7 +319,7 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
       // const lastId = messages[messages.length - 1].id;
       setSelectedId(id);
       try {
-        setLoading(true)
+        setLoading(true);
 
         setMessages((current) => current.slice(0, -1));
 
@@ -272,7 +335,7 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
             fileType: userMessage.file_type,
             promptId: userMessage.id,
             completionId: id,
-            isRegenerate: true
+            isRegenerate: true,
           }),
         });
         handleStreamingResponse(response);
@@ -281,16 +344,20 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
         const aiMessage: ChatMessageProps = {
           id: id,
           role: "assistant",
-          content: "Failed during post processing. Contact developers if this issue persists.",
+          content:
+            "Failed during post processing. Contact developers if this issue persists.",
           error: true,
           isEmbedded: false,
           image_url: null,
         };
         setMessages((current) => [...current, aiMessage]);
-        toast.success("Failed during post processing. Contact developers if this issue persists.", {theme: "colored", autoClose: 1500, hideProgressBar: true,});
+        toast.success(
+          "Failed during post processing. Contact developers if this issue persists.",
+          { theme: "colored", autoClose: 1500, hideProgressBar: true },
+        );
       }
     }
-  }
+  };
 
   const handleStreamingResponse = async (response: Response) => {
     const reader = response.body?.getReader();
@@ -301,7 +368,7 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
     }
 
     const decoder = new TextDecoder();
-    let streamText = '';
+    let streamText = "";
 
     const processStream = async () => {
       while (true) {
@@ -329,12 +396,14 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
       const response = await axios.delete(apiUrl);
 
       // Status 200 is automatically assumed here for successful response
-      setMessages(currentMessages => currentMessages.filter(item => item.id !== id));
+      setMessages((currentMessages) =>
+        currentMessages.filter((item) => item.id !== id),
+      );
     } catch (error) {
-      console.error('Failed to delete message:', error);
+      console.error("Failed to delete message:", error);
       // Handle error appropriately (e.g., show user feedback)
     }
-  }
+  };
 
   const [uploadLoading, setUploadLoading] = useState(false); // upload loading
 
@@ -373,28 +442,38 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
   return (
     <>
       <MicrophoneContextProvider>
-        {isVoice ?
+        {isVoice ? (
           <AudioStoreContextProvider>
             <NowPlayingContextProvider>
               <MessageMetadataContextProvider>
                 <DeepgramContextProvider>
-                  <VoiceChat character={character} isVoice={isVoice} setIsVoice={setIsVoice} />
+                  <VoiceChat
+                    character={character}
+                    isVoice={isVoice}
+                    setIsVoice={setIsVoice}
+                  />
                 </DeepgramContextProvider>
               </MessageMetadataContextProvider>
             </NowPlayingContextProvider>
           </AudioStoreContextProvider>
-          :
+        ) : (
           <>
             <div
               onDrop={handleDrop}
               onDragOver={(e) => e.preventDefault()}
-              className="sm:m-2 flex flex-grow flex-col items-center justify-start sm:rounded-2xl bg-[#121212] bg-chat text-white relative"
+              className="relative flex flex-grow flex-col items-center justify-start bg-[#121212] bg-chat text-white sm:m-2 sm:rounded-2xl"
+              style={{
+                backgroundImage: chatSettings?.theme?.url
+                  ? `url(${chatSettings?.theme?.url})`
+                  : "url(/chat_background.svg)",
+                backgroundSize: "cover",
+              }}
             >
               <ChatTopNav
                 character={character}
                 onClear={onClear}
                 userId={userId}
-                needsOverlay={!!userSettings?.chat_background_image}
+                needsOverlay={!!chatSettings?.theme?.url}
                 setRightOpen={() => setRightOpen(!openRight)}
                 openRecent={openRecent}
                 setRecentOpen={setRecentOpen}
@@ -402,10 +481,10 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
               <StreamingCompletionContext.Provider
                 value={{ completion, stopGenerating: onStopGeneration }}
               >
-                <div className="no-scrollbar w-full max-w-[750px] flex-grow overflow-x-hidden p-4 mb-10">
+                <div className="no-scrollbar mb-10 w-full max-w-[750px] flex-grow overflow-x-hidden p-4">
                   <ChatHeader character={character} />
                   <ChatMessages
-                    chat_background_image={userSettings?.chat_background_image}
+                    chat_background_image={chatSettings?.theme?.url}
                     isLoading={loading}
                     character={character}
                     messages={messages}
@@ -430,7 +509,7 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
                   toggleShowImage={toggleShowImage}
                   uploadLoading={uploadLoading}
                   setUploadLoading={setUploadLoading}
-                  needsOverlay={!!userSettings?.chat_background_image}
+                  needsOverlay={!!chatSettings?.theme?.url}
                   file={file}
                   setFile={setFile}
                   setFileKey={setFileKey}
@@ -440,10 +519,17 @@ const ChatMainSection = ({ character, openRight, setRightOpen, openRecent, setRe
                 />
               </StreamingCompletionContext.Provider>
             </div>
-            <ReportModal isReportModal={isReportModal} setReportModal={setReportModal} characterId={character.id} />
-            <ShareModal isShareModal={isShareModal} setShareModal={setShareModal} />
+            <ReportModal
+              isReportModal={isReportModal}
+              setReportModal={setReportModal}
+              characterId={character.id}
+            />
+            <ShareModal
+              isShareModal={isShareModal}
+              setShareModal={setShareModal}
+            />
           </>
-        }
+        )}
       </MicrophoneContextProvider>
     </>
   );

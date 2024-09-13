@@ -1,6 +1,6 @@
 import { SearchPage } from "@/components/toffee/search";
 import { auth } from "auth";
-import { sortedCharacters, getCandies, getCategories, getTags, getUsers } from "@/lib/query";
+import { sortedCharacters, getCandies, getCategories, getTags, getUsers, getVoices } from "@/lib/query";
 
 const Search = async () => {
   const session = await auth();
@@ -8,10 +8,11 @@ const Search = async () => {
   const userId = user?.id || "public";
 
   const characters = await sortedCharacters(userId)
-  const knowledges = await getCandies(userId)  
+  const knowledges = await getCandies(userId)
   const categories = await getCategories();
   const tags = await getTags();
   const users = await getUsers();
+  const voicelist = await getVoices();
   return (
     <SearchPage
       characterlist={characters}
@@ -19,6 +20,7 @@ const Search = async () => {
       knowledges={knowledges}
       categories={categories}
       tags={tags}
+      voicelist={voicelist}
     />
   );
 };

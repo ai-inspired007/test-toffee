@@ -26,7 +26,7 @@ const InputField: React.FC<InputFieldProps> = ({
       onChange={onChange}
       disabled={isLoading}
     />
-    {error && <span className="text-[#DF1C41] font-inter text-xs">{error}</span>}
+    {error && <span className="text-[#DF1C41]  text-xs">{error}</span>}
   </div>
 );
 

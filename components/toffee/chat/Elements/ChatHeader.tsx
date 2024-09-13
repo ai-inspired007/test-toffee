@@ -13,7 +13,7 @@ export const ChatHeader = ({
   return (
     <div className="mt-12 flex flex-col items-center justify-center">
       <img
-        className="h-28 w-28 rounded-full"
+        className="h-28 w-28 rounded-full object-cover"
         src={character.image}
         alt={character.name + " Image"}
       />

@@ -3,50 +3,47 @@ import Modal from "../../../ui/Modal";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { Search } from "lucide-react";
-import { RiPlayFill } from "../../icons/PlayFill";
-import { RiVoiceprintLine } from "../../icons/VoicePrint";
 import { VoiceType } from "@/app/(create)/create/voice/page";
+import CustomAudioPlayer from "./CustomAudioPlayer";
 
 const VoiceLibraryModal = ({
+  voices,
+  loadingVoices,
   isModal,
   toggle,
   originalVoice,
   setVoice,
 }: {
+  voices: any[];
+  loadingVoices: boolean;
   isModal: boolean;
   toggle: Function;
   originalVoice: VoiceType | undefined;
   setVoice: Dispatch<React.SetStateAction<VoiceType | undefined>>;
 }) => {
   type ItemType = {
-    id: number;
+    id: string;
     name: string;
   };
 
+  const [voiceList, setVoiceList] = useState<VoiceType[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [filteredPage, setFilteredPage] = useState(0);
   const [connectedPage, setConnectedPage] = useState(0);
   const [isDebounce, setIsDebounce] = useState(false);
-  const [selectedItemIds, setSelectedItemIds] = useState<number[]>([]);
-  const [selectedVoiceId, setSelectedVoiceId] = useState<number>();
+  const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
+  const [selectedVoiceId, setSelectedVoiceId] = useState<string>();
   const [filteredVoiceList, setFilteredVoiceList] = useState<VoiceType[]>([]);
 
   const arr: ItemType[] = [
-    { id: 1, name: "JJK" },
-    { id: 2, name: "ReZero" },
-    { id: 3, name: "AOT" },
-    { id: 4, name: "STF" },
-    { id: 5, name: "Death Note" },
+    { id: "1", name: "JJK" },
+    { id: "2", name: "ReZero" },
+    { id: "3", name: "AOT" },
+    { id: "4", name: "STF" },
+    { id: "5", name: "Death Note" },
   ];
 
-  const voiceList: VoiceType[] = [...Array(16)]?.map((_, index) => ({
-    name: "Zero Two",
-    voiceId: index,
-    description: "I'm Zero Two from Darling in the Franxx",
-    itemTypeId: (index % 5) + 1,
-  }));
-
-  const toggleSelectItem = (id: number) => {
+  const toggleSelectItem = (id: string) => {
     if (selectedItemIds.includes(id)) {
       setSelectedItemIds(selectedItemIds.filter((itemId) => itemId !== id));
     } else {
@@ -67,7 +64,23 @@ const VoiceLibraryModal = ({
     toggle();
   };
 
+  const handleSelectAudio = (voiceId: string) => {
+    setSelectedVoiceId(voiceId);
+  };
+
   const isAllSelected = selectedItemIds.length === arr.length;
+
+  useEffect(() => {
+    setVoiceList(
+      voices?.map((voice, index) => ({
+        name: voice.name,
+        voiceId: voice.voice_id,
+        description: voice.description || "",
+        itemTypeId: `${(index % 5) + 1}`,
+        audioUrl: voice.preview_url || "",
+      })),
+    );
+  }, [voices]);
 
   useEffect(() => {
     const delayTimeoutId = setTimeout(() => {
@@ -86,7 +99,7 @@ const VoiceLibraryModal = ({
       }
     }, 1500);
     return () => clearTimeout(delayTimeoutId);
-  }, [selectedItemIds, searchInput]);
+  }, [selectedItemIds, searchInput, voiceList]);
 
   useEffect(() => {
     if (isModal) {
@@ -100,7 +113,7 @@ const VoiceLibraryModal = ({
       onClose={() => toggle()}
       className="flex w-full flex-col items-center justify-center"
     >
-      <div className="relative flex h-[696px] w-[480px] flex-col justify-start rounded-xl bg-bg-2">
+      <div className="relative flex h-[calc(100vh-120px)] sm:h-[696px] w-full sm:w-[480px] flex-col justify-start rounded-xl bg-bg-2">
         {/* Header */}
         <div className="mx-[24px] mb-[8px] mt-[16px] flex items-center justify-between">
           <span className="font-medium text-white">Voice library</span>
@@ -154,56 +167,47 @@ const VoiceLibraryModal = ({
         </div>
 
         <div className="no-scrollbar mt-[16px] flex h-[432px] w-full flex-col gap-2 overflow-y-auto px-6">
-          {filteredVoiceList?.map((voice) => (
-            <div
-              key={voice?.voiceId}
-              className="broder relative flex cursor-pointer items-center justify-between rounded-2xl border-white/5 bg-[#202020BF] py-4 pl-[18px] pr-6"
-              onClick={() => setSelectedVoiceId(voice?.voiceId)}
-            >
-              <div className="flex gap-5">
-                {voice?.voiceId === 0 ? (
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-full bg-[#F7604C]`}
-                  >
-                    <RiVoiceprintLine className="h-6 w-6" />
-                  </div>
-                ) : voice?.voiceId % 3 === 0 ? (
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-full bg-[#6E3FF3]`}
-                  >
-                    <RiPlayFill className="h-6 w-6" />
-                  </div>
-                ) : voice?.voiceId % 3 === 1 ? (
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-full bg-[#BCB8C5]`}
-                  >
-                    <RiPlayFill className="h-6 w-6" />
-                  </div>
-                ) : (
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-full bg-[#CDF74C]`}
-                  >
-                    <RiPlayFill className="h-6 w-6" />
-                  </div>
-                )}
-                <div className="flex flex-col gap-1">
-                  <span className=" text-[16px] font-medium leading-5 text-white">
-                    {voice.name}
-                  </span>
-                  <span className=" text-xs font-normal text-[#787878]">
-                    {voice.description}
-                  </span>
-                </div>
-              </div>
-              {/* Custom Radio */}
-              <input
-                type="radio"
-                name="radio"
-                className="custom-radio"
-                checked={selectedVoiceId === voice?.voiceId}
+          {loadingVoices ? (
+            <div className="flex h-full items-center justify-center">
+              <Image
+                src="/loading.svg"
+                width={0}
+                height={0}
+                alt="rule"
+                className="h-[100px] w-[100px]"
               />
             </div>
-          ))}
+          ) : (
+            filteredVoiceList?.map((voice, index) => (
+              <div
+                key={voice?.voiceId}
+                className="broder relative flex w-full  items-center justify-start gap-5 rounded-2xl border-white/5 bg-[#202020BF] py-4 pl-[18px] pr-6"
+              >
+                <CustomAudioPlayer voice={voice} index={index} />
+                <div
+                  className="flex h-full w-full cursor-pointer items-center justify-between"
+                  onClick={() => handleSelectAudio(voice?.voiceId)}
+                >
+                  <div className="flex flex-col gap-1">
+                    <span className=" text-[16px] font-medium leading-5 text-white">
+                      {voice.name}
+                    </span>
+                    <span className=" text-xs font-normal text-[#787878]">
+                      {voice.description || "No description"}
+                    </span>
+                  </div>
+                  {/* Custom Radio */}
+                  <input
+                    type="radio"
+                    name="radio"
+                    className="custom-radio"
+                    checked={selectedVoiceId === voice?.voiceId}
+                    readOnly
+                  />
+                </div>
+              </div>
+            ))
+          )}
         </div>
         <div className="mt-[28px] flex w-full px-6">
           <button

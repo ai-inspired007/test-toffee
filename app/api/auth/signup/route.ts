@@ -41,6 +41,16 @@ export async function POST(req: Request) {
         name,
       },
     });
+
+    await prismadb.chatSetting.create({
+      data: {
+        userId,
+        voiceId: "",
+        themeId: "",
+        prompt: "",
+        chat_model: "gpt-4o"
+      }
+    });
     return NextResponse.json({ message: 'User created successfully', user: newUser }, { status: 201 });
   } catch (error) {
     console.error(error);

@@ -54,6 +54,7 @@ interface ChatFormProps {
   setFileName: Dispatch<SetStateAction<string>>;
   setFileType: Dispatch<SetStateAction<string>>;
   setIsVoice: Dispatch<SetStateAction<boolean>>;
+  setInput: Dispatch<SetStateAction<string>>;
 }
 
 export const ChatForm = forwardRef<HTMLInputElement, ChatFormProps>(
@@ -77,7 +78,8 @@ export const ChatForm = forwardRef<HTMLInputElement, ChatFormProps>(
       setFileKey,
       setFileName,
       setFileType,
-      setIsVoice
+      setIsVoice,
+      setInput,
     }: ChatFormProps,
     ref,
   ) => {

@@ -12,7 +12,7 @@ export default function Login({ isAuth }: { isAuth: boolean }) {
   const callbackUrl = searchParams.get('callbackUrl') || "/";
   useEffect(() => {
     if (isAuth) router.push(callbackUrl)
-  }, [])
+  }, [callbackUrl, isAuth, router])
   const handleGoogleAuth = async () => {
     const response = await signIn("google", {
       redirect: false,

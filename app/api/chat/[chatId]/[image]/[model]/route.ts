@@ -131,6 +131,8 @@ export async function POST(
     let body = await req.json();
     const { prompt, fileName, fileType, fileKey, promptId, completionId, isRegenerate } = body;
 
+    console.log(body);
+
     const embeddings = new OpenAIEmbeddings({openAIApiKey: process.env.OPENAI_API_KEY});
 
     let fileDocs: any = [];
@@ -147,14 +149,18 @@ export async function POST(
         const documents = await loader.load();
 
         const docs = (await new RecursiveCharacterTextSplitter({ chunkSize: 2000, chunkOverlap: 200 }).splitDocuments(documents));
-        console.log(docs.length);
+        if (docs) console.log(docs.length);
         const vectorStore = await MemoryVectorStore.fromDocuments(
           docs,
           embeddings
         );
         fileDocs = await vectorStore.similaritySearch(prompt, 1);
-        console.log(fileDocs.length);
+        if (fileDocs) console.log(fileDocs.length);
       }
+    }
+
+    if (!prompt || prompt.length == 0) {
+      return new NextResponse("Message must not be empty.", { status: 500 });
     }
 
     if (prompt.length > 2048) {
@@ -162,10 +168,6 @@ export async function POST(
         "Message exceeds maximum length of 2048 characters.",
         { status: 500 },
       );
-    }
-
-    if (prompt.length == 0) {
-      return new NextResponse("Message must not be empty.", { status: 500 });
     }
 
     let openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});

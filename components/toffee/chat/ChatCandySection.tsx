@@ -2,135 +2,165 @@ import { useState } from "react";
 import Image from "next/image";
 import { SearchLineIcon } from "../icons/SearchLineIcon";
 import { GitForkOutline } from "../icons/Fork";
-const ChatCandySection = () => {
+import { useChatPage } from "@/contexts/ChatPageProvider";
+import { TKnowledgePack } from "@/lib/types";
+import axios from "axios";
+
+const ChatCandySection = ({
+  categoryTags,
+  chatId
+}: {
+    categoryTags: string[];
+    chatId: string;
+}) => {
   type ItemType = {
     id: number;
     name: string;
   };
-  const arr: ItemType[] = [
-    { id: 1, name: "Haikyu" },
-    { id: 2, name: "One Punch Man" },
-    { id: 3, name: "Naruto" },
-    { id: 4, name: "JJK" },
-    { id: 5, name: "ReZero" },
-    { id: 6, name: "AOT" },
-    { id: 7, name: "JJK" }
-  ];
-  const [selectedItemIds, setSelectedItemIds] = useState<number[]>([]);
-  const toggleSelectItem = (id: number) => {
-    if (selectedItemIds.includes(id)) {
-      setSelectedItemIds(selectedItemIds.filter(itemId => itemId !== id));
+  const {
+    connectedCandies,
+    setConnectedCandies,
+    knowledgePacks,
+  } = useChatPage();
+  const [searchInput, setSearchInput] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>(["All"]);
+
+  const handleTagClick = (tag: string) => {
+    if (tag === "All") {
+      setSelectedTags(["All"]);
     } else {
-      setSelectedItemIds([...selectedItemIds, id]);
+      setSelectedTags((prevTags) =>
+        prevTags.includes(tag)
+          ? prevTags.filter((t) => t !== tag)
+          : [...prevTags.filter((t) => t !== "All"), tag],
+      );
     }
   };
-  const handleSelectAll = () => {
-    if (selectedItemIds.length === arr.length) {
-      setSelectedItemIds([]);
-    } else {
-      setSelectedItemIds(arr.map(item => item.id));
-    }
+
+  const handleConnectAddon = (addon: TKnowledgePack) => {
+    let initData = connectedCandies;
+    setConnectedCandies([...connectedCandies, addon]);
+    axios.post(`/api/character/${chatId}/knowledge`, { knowledgePackId: addon.id, isAdd: true })
+      .catch((err) => {
+        setConnectedCandies(initData);
+        console.log(err);
+      });
   };
-  const cards = Array.from({ length: 10 }, (_, index) => ({
-    id: index,
-    title: "One Punch Man",
-    subtitle: "VectorChat",
-    description: "Capable of defeating any enemy",
-    image: "/candies/candy1.png",
-    count: "635.5k"
-  }));
-  const isAllSelected = selectedItemIds.length === arr.length;
+
+  const handleRemoveAddon = (addonId: string) => {
+    let initData = connectedCandies;
+    setConnectedCandies(connectedCandies.filter((item) => item.id !== addonId));
+    axios.post(`/api/character/${chatId}/knowledge`, { knowledgePackId: addonId, isAdd: false })
+      .catch((err) => {
+        setConnectedCandies(initData);
+        console.log(err);
+    });
+  };
+
+  const filteredAddons = knowledgePacks.filter((pack: TKnowledgePack) => {
+    const matchesSearch =
+      pack.name.toLowerCase().includes(searchInput.toLowerCase()) ||
+      (pack.description &&
+        pack.description.toLowerCase().includes(searchInput.toLowerCase()));
+    const matchesTags =
+      selectedTags.includes("All") ||
+      pack.tags.some((tag) => selectedTags.includes(tag.name));
+    return (
+      matchesSearch &&
+      matchesTags &&
+      !connectedCandies.some((selected) => selected.id === pack.id)
+    );
+  });
+
   return (
-    <div className="h-screen flex-grow p-2 overflow-y-auto no-scrollbar">
-      <div className="flex flex-col rounded-lg bg-bg-2 w-full min-h-full">
-        <label className="sticky top-0 z-50 w-full rounded-t-lg bg-opacity-60 py-5 text-gray-400 backdrop-blur-lg backdrop-filter focus-within:text-gray-600 flex items-center border-0 border-b-2 border-white/10 ">
-          <SearchLineIcon className="h-6 w-6 pointer-events-none absolute left-6 text-[#B1B1B1]" />
-          <input className="relative h-9 bg-transparent text-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 block w-full appearance-none rounded-none pl-14 text-white z-10" placeholder="What are you looking for?" />
+    <div className="no-scrollbar h-screen flex-grow overflow-y-auto p-2">
+      <div className="flex min-h-full w-full flex-col rounded-lg bg-bg-2">
+        <label className="sticky top-0 z-50 flex w-full items-center rounded-t-lg border-0 border-b-2 border-white/10 bg-opacity-60 py-5 text-gray-400 backdrop-blur-lg backdrop-filter focus-within:text-gray-600 ">
+          <SearchLineIcon className="pointer-events-none absolute left-6 h-6 w-6 text-[#B1B1B1]" />
+          <input
+            className="relative z-10 block h-9 w-full appearance-none rounded-none bg-transparent pl-14 text-sm text-white transition-colors placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="What are you looking for?"
+          />
         </label>
-        <div className="flex flex-col gap-3 w-full p-6">
-          <span className="pr-4 pl-2 text-text-additional text-xs ">Connected candies</span>
+        <div className="flex w-full flex-col gap-3 p-6">
+          <span className="pl-2 pr-4 text-xs text-text-additional ">
+            Connected candies
+          </span>
           {/* Connected candies example list */}
           <div className="flex flex-row flex-wrap gap-4">
-            <div className="flex flex-col relative rounded-2xl overflow-hidden w-[389px] h-40">
-              <div className="absolute w-full h-full bg-gradient-to-r gap-1 from-[#202020] via-[#121212A6] to-[#12121200] p-5 flex flex-col" >
-                <span className="text-white font-medium ">One Punch Man</span>
-                <div className="text-text-additional flex flex-row gap-2 mb-1 items-center text-xs">
-                  <span className = "text-xs">VectorChat</span>
-                  <div className="w-1 h-1 bg-[#b1b1b1] rounded-full" />
-                  <GitForkOutline />
-                  <span className = "text-xs">635.5k</span>
+            {connectedCandies.map((pack) => (
+              <div key={pack.id} className="relative flex h-40 w-[389px] flex-col overflow-hidden rounded-2xl">
+                <div className="absolute flex h-full w-full flex-col gap-1 bg-gradient-to-r from-[#202020] via-[#121212A6] to-[#12121200] p-5">
+                  <span className="font-medium text-white ">
+                    {pack.name}
+                  </span>
+                  <div className="mb-1 flex flex-row items-center gap-2 text-xs text-text-additional">
+                    <span>{pack.description}</span>
+                    <div className="h-1 w-1 rounded-full bg-[#b1b1b1]" />
+                    <GitForkOutline />
+                    <span>{633}</span>
+                  </div>
+                  <span className="text-xs text-text-tertiary ">
+                    {pack.description}
+                  </span>
+                  <div className="mt-auto w-fit rounded-full bg-[#2F2F2F]  px-4 py-1.5 text-[#DDDDDD]">
+                    <button className="px-1 py-[3px] text-sm" onClick={() => handleRemoveAddon(pack.id)}>Remove</button>
+                  </div>
                 </div>
-                <span className="text-xs text-text-tertiary ">Capable of defeating any enemy</span>
-                <div className="bg-[#2F2F2F] px-4 py-1.5 text-[#DDDDDD]  rounded-full w-fit mt-auto">
-                  <span className="py-[3px] px-1 text-sm">Remove</span>
-                </div>
+                <Image
+                  src={pack.image || ""}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                />
               </div>
-              <Image src={"/candies/candy1.png"} alt="" className="w-full h-full object-cover" width={0} height={0} sizes="100vw" />
-            </div>
-            <div className="flex flex-col relative rounded-2xl overflow-hidden w-[389px] h-40">
-              <div className="absolute w-full h-full bg-gradient-to-r gap-1 from-[#202020] via-[#121212A6] to-[#12121200] p-5 flex flex-col" >
-                <span className="text-white font-medium ">One Punch Man</span>
-                <div className="text-text-additional flex flex-row gap-2 mb-1 items-center text-xs">
-                  <span className = "text-xs">VectorChat</span>
-                  <div className="w-1 h-1 bg-[#b1b1b1] rounded-full" />
-                  <GitForkOutline />
-                  <span className = "text-xs">635.5k</span>
-                </div>
-                <span className="text-xs text-text-tertiary ">Capable of defeating any enemy</span>
-                <div className="bg-[#2F2F2F] px-4 py-1.5 text-[#DDDDDD]  rounded-full w-fit mt-auto">
-                  <span className="py-[3px] px-1 text-sm">Remove</span>
-                </div>
-              </div>
-              <Image src={"/candies/candy1.png"} alt="" className="w-full h-full object-cover" width={0} height={0} sizes="100vw" />
-            </div>
+            ))}
+            
           </div>
-
-          {/* Tab line example */}
-          <div className="flex flex-row flex-wrap gap-1.5 mt-6 mb-2">
-            <div
-              className={`px-3 py-[5px] text-sm  font-medium cursor-pointer rounded-lg border border-white/10 ${isAllSelected ? 'bg-white text-black' : 'text-[#b1b1b1]'}`}
-              onClick={handleSelectAll}
-            >
-              All
-            </div>
-            {arr.map((item) => {
-              const isSelected = selectedItemIds.includes(item.id);
-              return (
-                <div
-                  key={item.id}
-                  className={`px-3 py-[5px] text-sm  font-medium cursor-pointer rounded-lg border border-white/10 ${isSelected ? 'bg-white text-black' : 'text-[#b1b1b1]'}`}
-                  onClick={() => toggleSelectItem(item.id)}
-                >
-                  {item.name}
-                </div>
-              );
-            })}
+          <div className="flex flex-row flex-wrap gap-2">
+            {["All", ...categoryTags].map((tag) => (
+              <span
+                key={tag}
+                className={`rounded-lg ${selectedTags.includes(tag) ? "bg-white text-black" : "bg-bg-2 text-text-additional"}  cursor-pointer border border-white/10 px-3 py-[7px] text-sm`}
+                onClick={() => handleTagClick(tag)}
+              >
+                {tag}
+              </span>
+            ))}
           </div>
           {/* Avaliable list example */}
           <div className="w-full overflow-hidden">
             <div className="flex flex-row flex-wrap gap-4">
-              {cards.map((card) => (
+              {filteredAddons.map((pack) => (
                 <div
-                  key={card.id}
-                  className="flex flex-col relative rounded-2xl overflow-hidden w-[389px] h-40"
+                  key={pack.id}
+                  className="relative flex h-40 w-[389px] flex-col overflow-hidden rounded-2xl"
                 >
-                  <div className="absolute w-full h-full bg-gradient-to-r from-[#202020] via-[#121212A6] to-[#12121200] p-5 flex flex-col">
-                    <span className="text-white font-medium ">{card.title}</span>
-                    <div className="text-text-additional flex flex-row gap-2 mb-1 items-center text-xs">
-                      <span>{card.subtitle}</span>
-                      <div className="w-1 h-1 bg-[#b1b1b1] rounded-full" />
+                  <div className="absolute flex h-full w-full flex-col bg-gradient-to-r from-[#202020] via-[#121212A6] to-[#12121200] p-5">
+                    <span className="font-medium text-white ">
+                      {pack.name}
+                    </span>
+                    <div className="mb-1 flex flex-row items-center gap-2 text-xs text-text-additional">
+                      <span>{pack.description}</span>
+                      <div className="h-1 w-1 rounded-full bg-[#b1b1b1]" />
                       <GitForkOutline />
-                      <span>{card.count}</span>
+                      <span>{633}</span>
                     </div>
-                    <span className="text-xs text-text-tertiary ">{card.description}</span>
-                    <div className="bg-white px-4 py-1 text-black  rounded-full w-fit mt-auto">
-                      <span className="py-[3px] px-1 text-sm">Connect</span>
+                    <span className="text-xs text-text-tertiary ">
+                      {pack.description}
+                    </span>
+                    <div className="mt-auto w-fit rounded-full bg-white  px-4 py-1 text-black">
+                      <button className="px-1 py-[3px] text-sm" onClick={() => handleConnectAddon(pack)}>Connect</button>
                     </div>
                   </div>
                   <Image
-                    src={card.image}
+                    src={pack.image || ""}
                     alt="Card Image"
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                     width={0}
                     height={0}
                     sizes="100vw"
@@ -142,6 +172,6 @@ const ChatCandySection = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 export default ChatCandySection;

@@ -10,6 +10,7 @@ import Characters from './Elements/CharacterTable';
 import Files from './Elements/FilesPanel';
 import clsx from 'clsx';
 import EditCandy from './Elements/EditCandy'
+import { useSearchParams } from 'next/navigation';
 
 const DiscoverPage = ({ data }: {
   data: {
@@ -25,13 +26,16 @@ const DiscoverPage = ({ data }: {
     links: Partial<KnowledgeLink>[] | undefined;
   }
 }) => {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const tabs = ["characters", "files"];
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab")?.toLocaleLowerCase() || tabs[0].toLocaleLowerCase();
+  const [selectedIndex, setSelectedIndex] = useState(tabs.indexOf(initialTab));
   const [files, setFiles] = useState(data.files);
   const [texts, setTexts] = useState(data.texts);
   const [links, setLinks] = useState(data.links);
   const categories = {
     Characters: <Characters characters={data.characters} />,
-    Files: <Files files={files} setFiles={setFiles} texts={texts} setTexts={setTexts} links={links} setLinks={setLinks} />
+    Files: <Files files={files} setFiles={setFiles} texts={texts} setTexts={setTexts} links={links} setLinks={setLinks} isPersonal={data.isPersonal} />
   }
   const [isEdit, setIsEdit] = useState(false);
 
@@ -56,7 +60,7 @@ const DiscoverPage = ({ data }: {
   return (
     <div className="h-screen w-full p-2 overflow-y-auto no-scrollbar">
       {isEdit ?
-        <EditCandy knowledgeId={data.knowledgeId} setIsEdit={setIsEdit} image={data.image} files={data.files} texts={data.texts} links={data.links} />
+        <EditCandy knowledgeId={data.knowledgeId} setIsEdit={setIsEdit} image={data.image} files={data.files} texts={data.texts} links={data.links} tab={tabs[selectedIndex]} />
         :
         <div className="flex flex-col rounded-lg bg-bg-2 w-full min-h-full pb-10">
           <div className={`h-[200px] w-full relative`}>

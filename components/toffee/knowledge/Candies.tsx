@@ -9,7 +9,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { Character as BaseCharacterProps, Category as BaseCategory } from "@prisma/client";
 import React from "react";
-import Carousel from "@/components/ui/Carousel";
+import Carousel from "@/components/ui/carousel";
 import CharacterCard from "@/components/toffee/CharacterCard";
 import CategoryCard from "@/components/toffee/CategoryCard";
 interface Character extends BaseCharacterProps {

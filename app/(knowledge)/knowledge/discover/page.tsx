@@ -21,7 +21,7 @@ const KnowledgePackCreate: React.FC = () => {
     isPersonal: true,
     conns: 1424,
     knowledgeId: "public",
-    image: "/candies/d8532a4c8ac663ef052fe1bce13c1ff8.png",
+    image: "/candies/candy1.png",
     characters: [
       {
         name: "Zero Two",
@@ -77,7 +77,7 @@ const KnowledgePackCreate: React.FC = () => {
     links: []
   };
 
-  return <DiscoverPage data={data}/>;
+  return <DiscoverPage data={data} />;
 }
 
 export default KnowledgePackCreate;

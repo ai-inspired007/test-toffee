@@ -1,17 +1,22 @@
 import prismadb from "@/lib/prismadb";
-import { auth, signIn } from "auth";
+import { auth } from "auth";
 import { redirect } from "next/navigation";
 import { ChatPage } from "@/components/toffee/chat/ChatPage";
+import { ChatpageProvider } from "@/contexts/ChatPageProvider";
+import { getCandies } from "@/lib/query";
+import { ChatPageWrapper } from "@/components/toffee/chat/ChatPageWrapper";
 
 interface PageProps {
   params: {
     chatId: string;
   };
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
-const Page = async ({ params }: PageProps) => {
+const Page = async ({ params, searchParams }: PageProps) => {
   const session = await auth();
-  let userId = session?.user?.id; 
+  let userId = session?.user?.id;
+  const preloadedQuestion = searchParams.question as string | undefined;
 
   const character = await prismadb.character.findUnique({
     where: {
@@ -38,9 +43,8 @@ const Page = async ({ params }: PageProps) => {
         select: { messages: true },
       },
     },
-    
   });
-  if(!userId) {
+  if (!userId) {
     return redirect("/login");
   }
   if (!character) {
@@ -49,9 +53,31 @@ const Page = async ({ params }: PageProps) => {
 
   const subs = character.subscriptions;
 
-  if (character.userId !== "public" && character.userId !== userId && subs.length == 0 && !character.shared) {
+  if (
+    character.userId !== "public" &&
+    character.userId !== userId &&
+    subs.length == 0 &&
+    !character.shared
+  ) {
     redirect("/");
   }
+
+  const categories = await prismadb.category.findMany({
+    select: {
+      id: true,
+      name: true,
+      tags: true,
+    },
+  });
+
+  const candies = await getCandies(userId);
+
+  const connectedKnowledgePacks =
+    await prismadb.characterKnowledgePack.findMany({
+      where: {
+        characterId: character.id,
+      },
+    });
 
   const userSettings = await prismadb.userSettings.findUnique({
     where: {
@@ -59,28 +85,45 @@ const Page = async ({ params }: PageProps) => {
     },
   });
 
+  const chatSettings = await prismadb.chatSetting.findFirst({
+    where: {
+      userId,
+    },
+    include: {
+      theme: true,
+    },
+  });
+
   const likeCount = await prismadb.characterFeedback.count({
     where: {
       characterId: params.chatId,
-      like: true
-    }
+      like: true,
+    },
   });
 
   const feedback = await prismadb.characterFeedback.findFirst({
     where: {
       characterId: params.chatId,
-      userId: userId
-    }
+      userId: userId,
+    },
   });
+
   return (
-    <ChatPage
-      userSettings={userSettings}
-      character={character}
-      userId={userId}
-      likeCount={likeCount}
-      like={feedback?.like}
-      star={feedback?.star}
-    />
+    <ChatpageProvider>
+      <ChatPageWrapper
+        userSettings={userSettings}
+        chatSettings={chatSettings}
+        character={character}
+        userId={userId}
+        likeCount={likeCount}
+        like={feedback?.like}
+        star={feedback?.star}
+        categorielist={categories}
+        candies={candies}
+        connectedKnowledgePacks={connectedKnowledgePacks}
+        preloadedQuestion={preloadedQuestion}
+      />
+    </ChatpageProvider>
   );
 };
 

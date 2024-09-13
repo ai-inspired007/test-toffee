@@ -9,10 +9,10 @@ export interface SharingProps {
 export interface SelectProps {
   options: SharingProps[],
   selectedOption: string,
-  setSelectedOption:  Dispatch<SetStateAction<string>>;
+  setSelectedOption: Dispatch<SetStateAction<string>>;
 }
 
-const SelectSharing = ({options, selectedOption, setSelectedOption}: SelectProps) => {
+const SelectSharing = ({ options, selectedOption, setSelectedOption }: SelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleDropdown = () => setIsOpen(!isOpen);
 
@@ -37,7 +37,7 @@ const SelectSharing = ({options, selectedOption, setSelectedOption}: SelectProps
   }, [handleClickOutside]);
   return (
     <div className="flex flex-col gap-1 cursor-pointer" ref={dropdownRef}>
-      <span className="text-xs font-semibold  text-text-tertiary">{"Sharing"}</span>
+      <span className="text-xs font-normal leading-none text-text-tertiary mb-1">{"Sharing"}</span>
       <div className="relative w-full">
         <div
           onClick={toggleDropdown}
@@ -65,7 +65,7 @@ const SelectSharing = ({options, selectedOption, setSelectedOption}: SelectProps
           </div>
         )}
       </div>
-      <div className="text-xs text-text-tertiary  mt-2.5">
+      <div className="text-xs text-text-tertiary  mt-[14px]">
         {"When public, anyone can see the type of file and any associated labels"}
       </div>
     </div>
